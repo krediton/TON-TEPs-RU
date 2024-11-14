@@ -1,152 +1,152 @@
 - **TEP**: [81](https://github.com/ton-blockchain/TEPs/pull/5)
-- **title**: TON DNS Standard
-- **status**: Active
-- **type**: Contract Interface
-- **authors**: [EmelyanenkoK](https://github.com/EmelyanenkoK), [Tolya](https://github.com/tolya-yanot)
-- **created**: 25.06.2022
-- **replaces**: -
-- **replaced by**: -
+- **title**: TON DNS Стандарт
+- **статус**: Активна
+- **Тип**: Контрактный Интерфейс
+- **авторы**: [EmelyanenkoK](https://github.com/EmelyanenkoK), [Tolya](https://github.com/tolya-yanot)
+- **создан**: 25.06.2022
+- **Заменяет**: -
+- \*\*заменено \*\*: -
 
 # Summary
 
-TON DNS is a service for translating human-readable domain names (such as `test.ton` or `mysite.temp.ton`) into TON smart contract addresses, ADNL addresses employed by services running in the TON Network (such as TON Sites), and so on.
+TON DNS - сервис для перевода человеко-читаемых доменных имен (например, `test.ton` или \`mysite.temp. ), в контактных адресах TON, адресов ADNL, используемых службами, работающими в сети TON (например, TON Sites), и так далее.
 
-# Motivation
+# Мотивация
 
-While anybody might in principle implement such a service using the TON Blockchain,
-it is useful to have such a predefined service with a wellknown interface,
-to be used by default whenever an application or a service wants to translate human-readable identifiers into addresses.
+Хотя любой человек в принципе может осуществлять такую услугу с помощью TON Blockchain,
+полезно иметь такой предопределенный сервис с известным интерфейсом,
+используется по умолчанию, когда приложение или служба хочет перевести человеко-читаемые идентификаторы в адреса.
 
-# Guide
+# Инструкция
 
-## Useful links
+## Полезные ссылки
 
-1. [Reference DNS smart contracts](https://github.com/ton-blockchain/dns-contract)
-2. [DNS Auction](https://dns.ton.org/) ([source code](https://github.com/ton-blockchain/dns))
+1. [Ссылка на смарт-контракты DNS](https://github.com/ton-blockchain/dns-contract)
+2. [Аукция DNS](https://dns.ton.org/) ([исходный код](https://github.com/ton-blockchain/dns))
 3. [ton.org documentation](https://ton.org/docs/#/web3/dns)
-4. Tolya answers about TON DNS (ru) - [1](https://github.com/ton-blockchain/TEPs/commit/4a09bfc737823f09f05dfb7008eec7784543bb2b), [2](https://telegra.ph/Otvety-na-voprosy-o-TON-DNS-kanalu-Investment-kingyru-CHast-2-08-06), [3](https://telegra.ph/Otvety-na-voprosy-o-TON-DNS-kanalu-Investment-kingyru-CHast-3-08-09)
+4. Ответы на вопросы о TON DNS (ru) - [1](https://github.com/ton-blockchain/TEPs/commit/4a09bfc737823f09f05dfb7008eec7784543bb2b), [2](https://telegra.ph/Otvety-na-voprosy-o-TON-DNS-kanalu-Investment-kingyru-CHast-2-08-06), [3](https://telegra.ph/Otvety-na-voprosy-o-TON-DNS-kanalu-Investment-kingyru-CHast-3-08-08-09)
 
-# Specification
+# Спецификация
 
-## Domain names
+## Доменные имена
 
-TON DNS employs familiarly-looking domain names, consisting of a **UTF-8** encoded string **up to 126 bytes**, with different sections of the domain name separated by dots (".").
+TON DNS использует привычные доменные имена, состоящие из **UTF-8** кодированной строки **до 126 байт**, с различными разделами имени домена, разделёнными точками (".").
 
-Bytes in range `0..32` (null character, control codes and space) inclusive are not allowed in domain names.
+Байты в диапазоне `0..32` (нулевый символ, контрольные коды и пробел) включительно не допускаются в доменных именах.
 
-For instance, `test.ton` and `mysite.temp.ton` are valid TON DNS domains.
+Например, `test.ton` и `mysite.temp.ton` являются допустимыми доменами TON DNS.
 
-Technically, TON domains are case-sensitive, but TON apps and services convert all domains to lowercase before performing a TON DNS lookup in order to obtain case-insensitivity, so it makes no sense to register domains not in the lowercase.
+Технически домены TON чувствительны к регистру, но TON приложения и службы преобразуют все домены в строчные перед выполнением TON DNS поиска для получения нечувствительности к регистру, так что не имеет смысла регистрировать домены не в нижнем регистре.
 
-Note that a particular smart contract implementation may impose additional name limits when creating subdomains (for example, to avoid similar characters to protect against phishing). But the `dnsresolve` get-method must support the domain names in the format described above.
+Заметим, что конкретная реализация смарт-контракта может наложить дополнительные ограничения на имя при создании поддоменов (например, чтобы избежать подобных символов для защиты от фишинга). Но `dnsresolve` get-method должен поддерживать доменные имена в формате, описанном выше.
 
-## Domain internal representation
+## Внутреннее представление домена
 
-Internally, TON DNS transforms domain names as follows. First, a domain name is split into its components delimited by dot characters `.`. Then null characters are appended to each component, and all components are concatenated in reverse order. For example, `google.com` becomes `com\0google\0`.
+Во внутреннем плане TON DNS преобразует имена доменов следующим образом. Сначала доменное имя разделено на компоненты, разделенные точными символами `.`. Затем к каждому компоненту добавляются нулевые символы, а все компоненты объединены в обратном порядке. Например, `google.com` становится `com\0google\0`.
 
-## First-level domain
+## Домен первого уровня
 
-Currently, only domains ending in `.ton` are recognized as valid TON DNS domains.
+В настоящее время только домены, заканчивающиеся в `.ton`, признаются допустимыми доменами TON DNS.
 
-This could change in the future. Notice, however, that it is a bad idea to define first-level domains coinciding with first-level domains already existing in the Internet, such as `.com` or `.to`, because one could then register a TON domain `google.com`, deploy a TON site there, create a hidden link to a page at this TON site from his other innocently-looking TON site, and steal `google.com` cookies from unsuspecting visitors.
+Это может измениться в будущем. Однако обратите внимание, что определение доменов первого уровня совпадает с областями первого уровня, уже существующими в Интернете, например ". om`или`.to`, потому что затем можно зарегистрировать домен TON `google. om`, развертывать TON сайт там, создать скрытую ссылку на страницу на этом сайте TON от его невинно выглядящего сайта TON и украсть `google. печенье om-файла от неподозреваемых посетителей.
 
-## Resolving TON DNS domains
+## Разрешение TON DNS доменов
 
 ### Root DNS
 
-First, the **root DNS smart contract** is located by inspecting the value of configuration parameter `#4` in a recent masterchain state. This parameter contains the 256-bit address of the root DNS smart contract inside the masterchain.
+Во-первых, у **root DNS смарт-контракт** находится проверка значения параметра конфигурации `#4` в недавнем состоянии masterchain. Этот параметр содержит 256-битный адрес умного контракта root DNS внутри masterchain.
 
 ### dnsresolve
 
-**Get-method**
+**Получать метод**
 
-Then a special get-method `dnsresolve` is invoked for the root DNS smart contract, with two parameters:
+Затем для root DNS используется специальный метод `dnsresolve` с двумя параметрами:
 
-- The first parameter is a `CellSlice` with `8n` data bits containing the internal representation of the domain being resolved, where `n` is the length of the internal representation in bytes (at most 127).
-- The second parameter is an unsigned 256-bit Integer containing the required `category`. Usually, category is sha256 hash of string. If the category is zero, then all categories are requested.
+- Первый параметр — это «CellSlice» с битами данных «8n», содержащими внутреннее представление разрешенного домена, где `n` - длина внутреннего представления в байтах (максимум 127).
+- Второй параметр является незнакомым 256-битным целым числом, содержащим нужную категорию. Обычно категорией является sha256 хэш строки. Если категория равна нулю, то запрашиваются все категории.
 
-**Get-method result**
+**Получение результата**
 
-Get-method returns two values:
+Get-method возвращает два значения:
 
-- The first is `8m`, the length (in bits) of the prefix of the internal representation of the domain that has been resolved, `0 < m <= n`.
-- The second is a `Cell` with the TON DNS record for the required domain in the required category, or the root a `Dictionary` with 256-bit unsigned integer keys (categories) and values equal to the serializations of corresponding TON DNS records.
+- Первый— «8м», длина (в битах) префикса разрешения внутреннего представления разрешенного домена, `0 < m <= n`.
+- Второй — это «Cell» с TON DNS записью для требуемого домена в требуемой категории, или root 'Словарь' с 256-битными неподписанными целыми ключами (категориями) и значениями, равными сериализации соответствующих TON DNS записей.
 
-**Not resolved**
+**Не решено**
 
-If this get-method fails, then the TON DNS lookup is unsuccessful.
+Если этот метод получения не удается, поиск TON DNS не удался.
 
-If the domain cannot be resolved by the root DNS smart contract, i.e. if no non-empty prefix is a valid domain known to the smart contract, then `(0, null)` is returned.
+Если домен не может быть разрешен с помощью смарт-контракта root DNS, т.е. если ни один непустой префикс не является допустимым доменом, известный смарт-контракту, то возвращается файл `(0, null)`.
 
-In other words, `m = 0` means that the TON DNS lookup has found no data for the required domain. In that case, the TON DNS lookup is also unsuccessful.
+Другими словами, `m = 0` означает, что поиск TON DNS не обнаружил данных для требуемого домена. В этом случае поиск TON DNS также не удался.
 
-**Resolved**
+**Разрешено**
 
-If `m = n`, then the second component of the result is either a `Cell` with a valid TON DNS record for the required domain and category, or a `Null` if there is no TON DNS record for this domain with this category.
+Если `m = n`, далее второй компонент результата — либо «Cell» с допустимой TON DNS записью для требуемого домена и категории, или `Null`, если нет записи TON DNS для этого домена с этой категорией.
 
-In either case, the resolution process stops, and the TON DNS record thus obtained is deserialized and the required information (such as the type of the record and its parameters, such as a smart contract address or a ADNL address).
+В любом случае процесс урегулирования останавливается, и полученная таким образом TON DNS запись десериализована и необходимая информация (такая, как тип записи и ее параметры, например адрес смарт-контракта или ADNL адрес).
 
-**Partial resolved**
+**Частичное решение**
 
-Finally, if `m < n`, then the lookup is successful so far, but only a partial result is available for the `m`-byte prefix of the original internal representation of the domain.
+Наконец, если `m < n`, то поиск до сих пор успешен. , но только частичный результат доступен для префикса `m`-байт оригинального внутреннего представления домена.
 
-The longest of all such prefixes known to the DNS smart contract is returned. For instance, an attempt to look up `mysite.test.ton` (i.e. `ton\0test\0mysite\0` in the internal representation) in the root DNS smart contract might return `8m=72`, corresponding to prefix `ton\0test\0`, i.e. to subdomain `test.ton` in the usual domain representation.
+Вернутся самые длинные префиксы, известные DNS смарт-контракты. Например, попытка найти `mysite.test.ton` (т.е. `ton\0test\0mysite\0` во внутреннем представлении) в умном контракте DNS root может вернуть `8m=72`, что соответствует префиксу `ton\0test\0`, i. , чтобы поддомен `test.ton` в обычном представлении домена.
 
-In that case, `dnsresolve()` returns the value for category `sha256("dns_next_resolver")` for this prefix regardless of the category originally requested by the client. By convention, category `sha256("dns_next_resolver")` contains a TON DNS Record of type `dns_next_resolver`, containing the address of next resolver smart contract (which can reside in any other workchain, such as the basechain).
+В этом случае `dnsresolve()` возвращает значение категории `sha256("dns_next_resolver")` для этого префикса, независимо от категории, запрошенной клиентом. По традиции, категория `sha256("dns_next_resolver")` содержит TON DNS запись типа `dns_next_resolver`, , содержащий адрес следующего смарт-контракта resolver (который может находиться в любой другой рабочей цепочке, например basechain).
 
-If that is indeed the case, the resolution process continues by running get-method `dnsresolve` for the next resolver, with the internal representation of the domain name containing only its part unresolved so far (if we were looking up `ton\0test\0mysite\0`, and prefix `ton\0test\0` was found by the root DNS smart contract, then the next `dnsresolve` will be invoked with `mysite\0` as its first argument).
+Если это действительно так, то процесс разрешения продолжается запуском get-метода `dnsresolve` для следующего resolver, с внутренним представлением доменного имени, содержащего только его часть нерешена (если мы искали `ton\0test\0mysite\0`, и префикс `ton\0test\0` был найден root DNS смарт-контрактом, а следующий `dnsresolve` будет вызван `mysite\0` в качестве первого аргумента).
 
-Then either the next resolver smart contract reports an error or the absence of any records for the required domain or any of its prefixes, or the final result is obtained, or another prefix and next resolver smart contract is returned. In the latter case, the process continues in the same fashion until all of the original domain is resolved.
+Затем либо следующий resolver смарт-контракт сообщает об ошибке или отсутствии каких-либо записей для нужного домена или префиксов, или получается окончательный результат, или возвращается другой префикс и следующий смарт-контракт резолвера. В последнем случае процесс продолжается одинаково до тех пор, пока не будут решены все оригинальные домены.
 
-**Null character at the beginning**
+**Нулевой символ в начале**
 
-Null character `\0` at the beginning of the request represent "self".
+Нулевой символ `\0` в начале запроса представляет "self".
 
-Calling the `dnsresolve` method with one null character `\0` ("." in human-readable form) and category is correct.
+Вызов метода `dnsresolve` с одним null символом `\0` ("." в человеко-читаемой форме) и категорией верен.
 
-In this case, the DNS smart contract can return the requested category(-ies) from its DNS records.
+В этом случае DNS смарт-контракт может вернуть запрашиваемую категорию(-и) из своих DNS записей.
 
-Example:
+Например:
 
-`dnsresolve("ton\0test\0mysite\0", 1)` is invoked for the root DNS smart contract.
+`dnsresolve("ton\0test\0mysite\0", 1)` используется для смарт-контракта root DNS.
 
-Result is `8m=64`, corresponding to prefix `ton\0test`, and `dns_next_resolver` record.
+Результат `8m=64`, соответствующий префиксу `ton\0test` и `dns_next_resolver`.
 
-`dnsresolve("\0mysite\0", 1)` is invoked for the DNS smart contract obtained from `dns_next_resolver` record.
+`dnsresolve("\0mysite\0", 1)` вызывается для DNS смарт-контракта, полученного из записи `dns_next_resolver`.
 
-Result is `8m=56`, corresponding to prefix `\0mysite`, and `dns_next_resolver` record.
+Результат `8m=56`, соответствующий префиксу `\0mysite`, и `dns_next_resolver`.
 
-`dnsresolve("\0", 1)` is invoked for the DNS smart contract obtained from `dns_next_resolver` record.
+`dnsresolve("\0", 1)` вызывается для DNS смарт-контракта, полученного из записи `dns_next_resolver`.
 
-Result is `8m=8`, corresponding to `\0` and Cell with DNS record of category 1.
+Результат `8m=8`, соответствующий `\0` и ячейке с DNS записью категории 1.
 
-**Calling a `dnsresolve` on a non-root DNS smart contract**
+\*\*Вызов `dnsresolve` на смарт-контракте non-root DNS
 
-Same with the `dnsresolve` on root DNS smart contract, but the initial request must start with a null character so that all types of implementations can return the correct result.
+То же самое с `dnsresolve` в root-DNS смарт-контракте, но первоначальный запрос должен начинаться с нулевого символа, чтобы все типы реализаций вернули правильный результат.
 
-Example: `dnsresolve("\0test\0mysite\0")`.
+Пример: `dnsresolve("\0test\0mysite\0")`.
 
-Note that this is only required for the initial request, not during recursion.
+Обратите внимание, что это требуется только для первоначального запроса, а не во время рекурсии.
 
 ## DNS Smart Contract
 
-A smart contract that implements the TON DNS standard must contain a `dnsresolve` get-method that works as described above.
+Смарт-контракт, реализующий стандарт TON DNS, должен содержать get-метод `dnsresolve`, который работает как описано выше.
 
-## DNS Records
+## DNS записи
 
-Standard categories:
+Стандартные категории:
 
-Category `sha256("dns_next_resolver")` - DNS next resolver, contains smart contract address of next DNS resolver in `dns_next_resolver` schema;
+Категория `sha256("dns_next_resolver")` - DNS следующий резолвер, содержит умный контрактный адрес следующего DNS резолвера в схеме `dns_next_resolver`;
 
-Category `sha256("wallet")` - TON Wallet, contains smart contract address in `dns_smc_address` schema;
+Категория `sha256("кошелек")` - TON Wallet, содержит смарт-адрес контракта в схеме `dns_smc_address`;
 
-Category `sha256("site")` - TON Site, contains ADNL address in `dns_adnl_address` schema;
+Категория `sha256("site")` - TON сайт, содержит ADNL адрес в схеме `dns_adnl_address`;
 
-TL-B Schema of DNS Records values:
+TL-B схема значений DNS записей:
 
 ```
-proto_http#4854 = Protocol;
-proto_list_nil$0 = ProtoList;
+proto_http#4854 = Протокол;
+Proto_list_nil$0 = ПротоList;
 
 proto_list_next$1 head:Protocol tail:ProtoList = ProtoList;
 
@@ -155,7 +155,7 @@ proto_list_next$1 head:Protocol tail:ProtoList = ProtoList;
 cap_is_wallet#2177 = SmcCapability;
 
 cap_list_nil$0 = SmcCapList;
-cap_list_next$1 head:SmcCapability tail:SmcCapList = SmcCapList;
+cap_list_next$1 голов:SmcCapability tail:SmcCapList = SmcCapList;
 
 dns_smc_address#9fd3 smc_addr:MsgAddressInt flags:(## 8) { flags <= 1 }
   cap_list:flags . 0?SmcCapList = DNSRecord;
@@ -167,50 +167,50 @@ dns_storage_address#7473 bag_id:bits256 = DNSRecord;
 _ (HashmapE 256 ^DNSRecord) = DNS_RecordSet;
 ```
 
-# Drawbacks
+# Ничья
 
-None
+Нет
 
-# Rationale and alternatives
+# Обоснование и альтернативы
 
-## Why domains are so expensive?
+## Почему домены настолько дорогие?
 
-Without minimal price, it is possible to buy all 4-letters domains (26^4 = ~457000) for several tens of thousands TON. So, minimal price depends on the length of domain name. It is also worth noting that after a few months minimal price for all domains will decrease to 100 TON.
+Без минимальной цены можно купить все 4-буквенные домены (26^4 = ~457000) на несколько десятков тысяч TON. Таким образом, минимальная цена зависит от длины имени домена. Также стоит отметить, что через несколько месяцев минимальная цена на все домены снизится до 100 TON.
 
-## Why DNS auction burns coins?
+## Почему DNS аукцион сжигает монеты?
 
-If we will not burn coins from DNS auctions, then, who we will need send money to?
+Если мы не будем сжигать монеты с DNS аукционов, то кому нам понадобится перевод?
 
-## Why only ASCII domains are allowed?
+## Почему разрешены только домены ASCII?
 
-If we support UTF-8, it would be possible to create domains which will look same, but still will be different domains (example.ton and ехаmрlе.ton).
+Если мы поддерживаем UTF-8, то можно создать домены, которые будут выглядеть одинаково, но все же будут разные домены (example.ton и ехал.тон).
 
-## Why there is resolver for subdomains?
+## Почему существует resolver для поддоменов?
 
-It is possible to implement any logic for subdomains in custom resolver contract.
+Возможна реализация любой логики для субдоменов в пользовательском клиентском соглашении.
 
-## Why domains are not bought forever?
+## Почему домены не покупаются навсегда?
 
-There is a possibility that access to wallet which owns a domain will be lost, so domain will be lost forever. In TON DNS, it is required to prolong domains each year by sending at least 0.005 TON (minimal amount of TONs for message to be processed) to the contract.
+Существует возможность того, что доступ к кошельку, который владеет домен, будет утерян, так что домен будет потерян навсегда. В TON DNS, каждый год требуется продлевать домены, отправляя не менее 0. 05 TON (минимальное количество TONs для обработки сообщения) к контракту.
 
-# Prior art
+# Предыдущее искусство
 
 1. [EIP-137](https://eips.ethereum.org/EIPS/eip-137)
 
-# Unresolved questions
+# Нерешенные вопросы
 
-None
+Нет
 
-# Future possibilities
+# Будущие возможности
 
-1. Implement private (encrypted) fields
+1. Внедрение приватных (зашифрованных) полей
 
-# Changelog
+# Список изменений
 
-- 20 Dec 2023 - deleted unused capabilities:
+- 20 Дек 2023 - удаленные неиспользуемые возможности:
 
   ```
-  cap_method_seqno#5371 = SmcCapability;
+  cap_method_seqno#5371 = Smcability;
   cap_method_pubkey#71f4 = SmcCapability;
-  cap_name#ff name:Text = SmcCapability;
+  cap_name#ff name:Текст = SmcCapability;
   ```
