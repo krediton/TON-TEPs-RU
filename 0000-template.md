@@ -1,48 +1,48 @@
-- **TEP**: [0](https://github.com/ton-blockchain/TEPs/pull/0) *(don't change)*
-- **title**: TEP Template *(write title of TEP here)*
-- **status**: Draft
-- **type**: Meta / Core / Contract Interface *(choose one)*
-- **authors**: [Vladimir Lebedev](https://github.com/hacker-volodya) *(replace)*
-- **created**: DD.MM.YYYY *(fill with current date)*
-- **replaces**: [TEP-0](https://github.com/ton-blockchain/TEPs/blob/master/0000-template.md)
-- **replaced by**: -
+- **TEP**: [0](https://github.com/ton-blockchain/TEPs/pull/0) _(Не меняй)_
+- **title**: TEP Шаблон _(напишите название TEP здесь)_
+- **статус**: черновик
+- **type**: Meta / Core / Contract Interface _(выберите один)_
+- **авторы**: [Владимир Лебедев](https://github.com/hacker-volodya) _(replace)_
+- **создан**: DD.MM.YYYYY _(заполнить текущую дату)_
+- **замените**: [TEP-0](https://github.com/ton-blockchain/TEPs/blob/master/0000-template.md)
+- \*\*заменено \*\*: -
 
 # Summary
 
-Which feature this document introduces? Describe it in one paragraph.
+Какую возможность представляет этот документ? Опишите его в одном пункте.
 
-# Motivation
+# Мотивация
 
-Which problem we address? Why it is important to make a new TEP?
+Какую проблему мы решаем? Почему важно сделать новый TEP?
 
-# Guide
+# Инструкция
 
-Explain this document in simple language, as if you were teaching it to another developers. Give examples how your feature will work in real life.
+Объясните этот документ на простом языке, как если бы вы преподавали его другим разработчикам. Приведите примеры того, как ваша функция будет работать в реальной жизни.
 
-# Specification
+# Спецификация
 
-This section describes your feature formally. It contains requirements, which must be followed in order to implement your TEP. To keep things formal, it is convenient to follow [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt). You should include following text at the beginning of this section:
+Этот раздел формально описывает вашу функцию. Он содержит требования, которые должны соблюдаться для реализации вашей ТЕП. Чтобы поддерживать формальность, удобно следовать инструкции [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt). В начале этого раздела следует включить следующий текст:
 
-> The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be interpreted as described in RFC 2119.
+> Ключевые слова “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “HOULD NOT”, “HOULD NOT”, “ В настоящем документе "РЕКОМЕНДАЦИЯ", "МАЙ" и "OPTIONAL" следует толковать как это описано в RFC 2119.
 
-# Drawbacks
+# Ничья
 
-Why should we *not* do this?
+Почему мы _не_ это делать?
 
-# Rationale and alternatives
+# Обоснование и альтернативы
 
-- Why is this design the best in the space of possible designs?
-- What other designs have been considered and what is the rationale for not choosing them?
-- What is the impact of not doing this?
+- Почему этот дизайн является лучшим в пространстве возможных дизайнов?
+- Какие другие дизайны были учтены и какова причина их невыбора?
+- Каковы последствия отказа от этого?
 
-# Prior art
+# Предыдущее искусство
 
-Discuss prior art, both the good and the bad, in relation to this proposal. How the problem stated in "Motivation" section was solved in another blockchains? This section encourages you as an author to learn from others' mistakes. Feel free to include links to blogs, books, Durov's whitepapers, etc.
+В связи с этим предложением обсуждается как благое и плохое искусство. Как была решена проблема в разделе "Мотивация" в других блокчейнах? Этот раздел побуждает вас как автора учиться на ошибках других. Не стесняйтесь включать ссылки на блоги, книги, белые документы Дурова и т.д.
 
-# Unresolved questions
+# Нерешенные вопросы
 
-If there are some questions that have to be discussed during review process or to be solved during implementation of this TEP, write it here.
+Если есть некоторые вопросы, которые необходимо обсудить в ходе процесса рассмотрения или которые должны быть решены в ходе осуществления настоящей ТЕП, напишите об этом здесь.
 
-# Future possibilities
+# Будущие возможности
 
-Do you have ideas, which things can be implemented on top of this TEP later? Write possible ideas of new TEPs, which are related to this TEP.
+Есть ли у вас идеи, какие вещи могут быть реализованы поверх этого TEP позже? Напишите возможные идеи новых ТЭП, которые имеют отношение к этому ТЕП.

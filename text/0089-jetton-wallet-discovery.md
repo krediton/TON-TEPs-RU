@@ -1,48 +1,49 @@
 - **TEP**: [89](https://github.com/ton-blockchain/TEPs/pull/89)
-- **title**: Discoverable Jettons Wallets
-- **status**: Active
-- **type**: Contract Interface
-- **authors**: [sasha1618](https://github.com/sasha1618), [EmelyanenkoK](https://github.com/EmelyanenkoK) 
-- **created**: 08.09.2022 
-- **replaces**: -
-- **replaced by**: -
+- **title**: Открытые Jettons Wallets
+- **статус**: Активна
+- **Тип**: Контрактный Интерфейс
+- **authors**: [sasha1618](https://github.com/sasha1618), [EmelyanenkoK](https://github.com/EmelyanenkoK)
+- **создан**: 08.09.2022
+- **Заменяет**: -
+- \*\*заменено \*\*: -
 
 # Summary
 
-This proposal suggest to extend standard Jetton master by adding mandatory onchain `provide_wallet_address` handler.
+Это предложение предлагает расширить стандартный мастер Jetton за счет добавления обязательного обработчика onchain `provide_wallet_address`.
 
-# Motivation
+# Мотивация
 
-Some application may want to be able to discover their or other contract wallets for some specific Jetton Master. For instance some contract may want to obtain and store it's jetton wallet for some Jetton to handle transfer notifications from it in specific way.
+Некоторые приложения могут захотеть, чтобы иметь возможность найти свои или другие контрактные кошельки для некоторых специфических Jetton Master. Например, некоторые контракты могут захотеть получить и хранить кошелек Jetton для некоторых Jetton для обработки уведомлений о передаче от него определенным образом.
 
-# Guide
+# Инструкция
 
-Upon receiving `provide_wallet_address` message with address in question, Jetton Master should response with message containing address.
+При получении сообщения `provide_wallet_address` с адресом в вопросе, Jetton Master должен ответить на сообщение, содержащее адрес.
 
-# Specification
+# Спецификация
 
-## New Jetton Master contracts
-Example of discoverable jetton minter code can be found [here](https://github.com/ton-blockchain/token-contract/blob/main/ft/jetton-minter-discoverable.fc)
+## Новые контракты с мастером Jetton
 
+Пример видимого jetton minter кода можно найти [here](https://github.com/ton-blockchain/token-contract/blob/main/ft/jetton-minter-discoverable.fc)
 
-Jetton Master should handle message
+Jetton Master должен обработать сообщение
 
 `provide_wallet_address#2c76b973 query_id:uint64 owner_address:MsgAddress include_address:Bool = InternalMsgBody;`
 
-with TON amount higher than `5000 gas-units + msg_forward_prices.lump_price + msg_forward_prices.cell_price` = 0.0061 TON for current basechain settings (if amount is less than that it is not possible to send response) attached
+с суммой TON больше `5000 газовых единиц + msg_forward_prices.lump_price + msg_forward_prices.cell_price` = 0. 061 ПТОН для текущих настроек базы (если количество меньше, чем это невозможно отправить ответ) прилагается
 
-and either throw an exception if amount of incoming value is not enough to calculate wallet address or
-response with message (sent with mode 64)
+и либо выбросить исключение, если количество входящего значения не достаточно для вычисления адреса кошелька или
+ответа с сообщением (отправлено в режиме 64)
 
 `take_wallet_address#d1735400 query_id:uint64 wallet_address:MsgAddress owner_address:(Maybe ^MsgAddress) = InternalMsgBody;`
 
-Note: if it is not possible to generate wallet address for address in question (for instance wrong workchain) `wallet_address` in `take_wallet_address` should be equal to `addr_none`. If `include_address` is set to `True`, `take_wallet_address` should include `owner_address` equal to `owner_address` in request (in other words response contains both owner address and associated jetton wallet address).
+Примечание: если невозможно сгенерировать адрес кошелька для адреса в вопросе (например, неправильный workchain) `wallet_address` в `take_wallet_address` должен быть равен `addr_none`. Если `include_address` имеет значение `True`, В запросе `take_wallet_address` должен включать `owner_address` равный `owner_address` (в других словах ответ содержит адрес владельца и связанный с ним адрес кошелька jetton).
 
-## Already existing Jetton Master contracts
+## Уже существующие контракты с Jetton Master
 
-Jettons with non-upgradable Jetton Master may spawn separate smart-contract (Jetton discovery) which implements this functionality. In this case pair of contracts (Jetton Master + Jetton Discovery) will behave the same way as new Jetton Master. For non-upgradable Jetton Master with updatable metadata it is recommended to add "wallet-discovery" key with value equal to text representaion of Jetton Discovery contract address.
+Джеттоны с необновлённым Jetton Master могут создать отдельный смарт-контракт (обнаружение Джеттона), который реализует эту функциональность. В этом случае пары контрактов (Jetton Master + Jetton Discovery) будут вести себя так же, как и новые Jetton Master. Для необновлённого Jetton Master с обновляемыми метаданными рекомендуется добавить ключ "открытия кошелька" со значением, равным текстовому представлению Jetton Discovery адреса контракта.
 
-## Scheme:
+## Схем:
+
 ```
 provide_wallet_address#2c76b973 query_id:uint64 owner_address:MsgAddress include_address:Bool = InternalMsgBody;
 take_wallet_address#d1735400 query_id:uint64 wallet_address:MsgAddress owner_address:(Maybe ^MsgAddress) = InternalMsgBody;
@@ -53,22 +54,22 @@ crc32('provide_wallet_address query_id:uint64 owner_address:MsgAddress include_a
 crc32('take_wallet_address query_id:uint64 wallet_address:MsgAddress owner_address:Maybe ^MsgAddress = InternalMsgBody') = d1735400
 ```
 
-# Drawbacks
+# Ничья
 
-If new applications start to heavily rely on these proposal without supporting separate Jetton Master/Jetton Discovery they may not be able to process already existing jettons.
+Если новые приложения начинают сильно полагаться на это предложение без поддержки отдельных Jetton Master/Jetton Discovery они могут не обработать уже существующие Jetton.
 
-# Rationale and alternatives
+# Обоснование и альтернативы
 
-Currently it is expected that decentralised applications will work with specific wallets not with Jetton Masters. However sometimes it makes logic more complicated (especially if it is desired to create predictable contract addresses) or less straightforward for user-side checks.
+В настоящее время ожидается, что децентрализованные приложения будут работать с конкретными кошельками не с Jetton Masters. Однако иногда логика становится более сложной (особенно если желательно создать предсказуемые контрактные адреса) или менее простой для пользовательских проверок.
 
-# Prior art
+# Предыдущее искусство
 
 -
 
-# Unresolved questions
+# Нерешенные вопросы
 
-It is not possible to distinguish Jetton Discovery which consume higher than expected fee from non-Jetton Discovery contract.
+Jetton Discovery не может отличить Jetton Discovery от контракта не Jetton Discovery, потребляющего более высокую комиссию.
 
-# Future possibilities
+# Будущие возможности
 
 -
