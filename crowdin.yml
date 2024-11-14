@@ -1,3 +1,4 @@
 files:
   - source: '*.md'
-    translation: /%two_letters_code%/%original_path%/%original_file_name%
+    translation: /%original_path%/%original_file_name%
+    multilingual: 1
