@@ -1,31 +1,31 @@
 - **TEP**: [66](https://github.com/ton-blockchain/TEPs/pull/6)
-- **title**: NFTRoyalty Standard Extension
-- **status**: Active
-- **type**: Contract Interface
-- **authors**: [EmelyanenkoK](https://github.com/EmelyanenkoK), [Tolya](https://github.com/tolya-yanot)
-- **created**: 12.02.2022
-- **replaces**: -
-- **replaced by**: -
+- **title**: стандартное расширение NFTRoyalty
+- **статус**: Активна
+- **Тип**: Контрактный Интерфейс
+- **авторы**: [EmelyanenkoK](https://github.com/EmelyanenkoK), [Tolya](https://github.com/tolya-yanot)
+- **создан**: 12.02.2022
+- **Заменяет**: -
+- \*\*заменено \*\*: -
 
 # Summary
 
-Extension for [NFT Standard](https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md).
+Расширение для [NFT стандарта](https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md).
 
-A standardized way to retrieve royalty payment information for non-fungible tokens (NFTs) to enable universal support for royalty payments across all NFT marketplaces and ecosystem participants.
+Стандартизированный способ получения информации о выплатах роялти для негрибных токенов (NFT), с тем чтобы обеспечить всеобщую поддержку платежей роялти на всех рынках и среди участников экосистем.
 
-# Motivation
+# Мотивация
 
-It is convenient to standardize royalty, so all NFT markets will pay royalty to collection author independently of how this collection was deployed.
+Удобно стандартизировать рояльность, так что все рынки NFT будут платить роялти сборщику независимо от того, как эта коллекция была создана.
 
-# Guide
+# Инструкция
 
-1. report_royalty_params example implementation: [ton-blockchain/token-contract](https://github.com/ton-blockchain/token-contract/blob/2c13d3ef61ca4288293ad65bf0cfeaed83879b93/nft/nft-collection.fc#L58-L68).
-2. get_royalty_params example implementation: [ton-blockchain/token-contract](https://github.com/ton-blockchain/token-contract/blob/2c13d3ef61ca4288293ad65bf0cfeaed83879b93/nft/nft-collection.fc#L149-L153).
+1. report_royalty_params пример реализации: [ton-blockchain/token-contract](https://github.com/ton-blockchain/token-contract/blob/2c13d3ef61ca4288293ad65bf0cfeaed83879b93/nft/nft-collection.fc#L58-L68).
+2. get_royalty_params пример реализации: [ton-blockchain/token-contract](https://github.com/ton-blockchain/token-contract/blob/2c13d3ef61ca4288293ad65bf0cfeaed83879b93/nft/nft-collection.fc#L149-L153).
 
-Royalty data example in Fift:
+Пример данных роялти в Fift:
 
 ```
-"EQCD39VS5jcptHL8vMjEXrzGaRcCVYto7HUn4bpAOg8xqB2N" parse-smc-addr drop 2=: royalty-addr
+"EQCD39VS5jcptHL8vMjEXrzGaRcCVYto7HUn4bpAOg8xqB2N" parse-smc-addr drop 2 =: royalty-addr
 
 <b
     11 16 u, // numerator
@@ -34,38 +34,38 @@ Royalty data example in Fift:
 b> =: royalty-params
 ```
 
-# Specification
+# Спецификация
 
-> The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be interpreted as described in RFC 2119.
+> Ключевые слова “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “HOULD NOT”, “HOULD NOT”, “ В настоящем документе "РЕКОМЕНДАЦИЯ", "МАЙ" и "OPTIONAL" следует толковать как это описано в RFC 2119.
 
-NFT Collection smart contract MUST implement:
+Умный контракт коллекции NFT ДОЛЖНО реализации:
 
-(if this is a variant of NFT items without collection then NFT item smart contract MUST implement this).
+(если это вариант NFT элементов без коллекции, то смарт-контракт должен это реализовать).
 
-#### Get-methods
+#### Получать методы
 
-1. `royalty_params()` returns `(int numerator, int denominator, slice destination)`
-   Royalty share is `numerator / denominator`.
-   E.g if `numerator = 11` and `denominator = 1000` then royalty share is `11 / 1000 * 100% = 1.1%`.
-   `numerator` must be less `denominator`.
-   `destination` - address to send royalty. Slice of type `MsgAddress`.
+1. `royalty_params()` возвращает `(int numerator, int denominator, slice destination)`
+   Royalty доля `numerator / denominator`.
+   Например, если `numerator = 11` и `denominator = 1000` то доля royalty равна `11 / 1000 * 100% = 1.1%`.
+   «числитель» должен быть меньше «знаменатель».
+   `destination` - адрес для отправки роялты. Кусочек типа «MsgAddress».
 
-#### Internal messages
+#### Внутренние сообщения
 
 1. `get_royalty_params`
-   **Request**
-   TL-B schema of inbound message:
+   **Запрос**
+   TL-B схема входящего сообщения:
    `get_royalty_params#693d3950 query_id:uint64 = InternalMsgBody;`
-   `query_id` - arbitrary request number.
+   `query_id` - произвольный номер запроса.
    **Should do:**
    Send back message with the following layout and send-mode `64` (return msg amount except gas fees):
    TL-B schema `report_royalty_params#a8cb00ad query_id:uint64 numerator:uint16 denominator:uint16 destination:MsgAddress = InternalMsgBody;`
 
-It is expected that marketplaces which want to participate in royalty payments will send `muldiv(price, numerator, denominator)` to `destination` address after NFT sale.
+Ожидается, что рыночные площадки, которые хотят участвовать в платежах роялти, будут отправлять 'muldiv(цена, числитель, знаменатель)' на адрес 'destination' после продажи NFT.
 
-Marketplaces SHOULD neglect zero-value royalty payments.
+Рыночные площадки ДОЛЖНЫ игнорировать платежи с нулевой стоимостью.
 
-Marketplaces MAY deduct gas and message fees required to send royalty from royalty amount.
+Рынки могут вычесть комиссию за газ и сообщения, требуемую для отправки роялти с суммы роялти.
 
 ## TL-B Schema
 
@@ -74,28 +74,28 @@ get_royalty_params query_id:uint64 = InternalMsgBody;
 report_royalty_params query_id:uint64 numerator:uint16 denominator:uint16 destination:MsgAddress = InternalMsgBody;
 ```
 
-`crc32('get_royalty_params query_id:uint64 = InternalMsgBody') = 0xe93d3950 & 0x7fffffff = 0x693d3950`
+`crc32('get_royalty_params query_id:uint64 = InternalMsgBody') = 0xe93d3950 & 0x7fffffffff = 0x693d3950`
 
 `crc32('report_royalty_params query_id:uint64 numerator:uint16 denominator:uint16 destination:MsgAddress = InternalMsgBody') = 0xa8cb00ad | 0x80000000 = 0xa8cb00ad`
 
-# Drawbacks
+# Ничья
 
-There is no way to enforce royalty for each sale. There should be an option to gift NFT for free, however, it is not possible to track, was it really for free or not. See the relevant paragraph in [TEP-62](https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md#why-are-there-no-obligatory-royalties-to-the-author-from-all-sales).
+Для каждой продажи нельзя обеспечить рояльность. Должен быть вариант подарка NFT бесплатно, однако, невозможно отслеживать, это действительно для свободного или нет. См. соответствующий пункт в разделе [TEP-62](https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md#why-are-there-no-obligatory-royalties-to-the-author-from-all-sales).
 
-# Rationale and alternatives
+# Обоснование и альтернативы
 
-## Why can't I set a fixed amount of royalties?
+## Почему я не могу установить фиксированную сумму вознаграждения?
 
-We do not know in what currency the sale will take place. Percentage royalty is universal.
+Мы не знаем, в какой валюте будет продана. Процент роялти универсален.
 
-# Prior art
+# Предыдущее искусство
 
 1. [EIP-2981: NFT Royalty Standard](https://eips.ethereum.org/EIPS/eip-2981)
 
-# Unresolved questions
+# Нерешенные вопросы
 
-1. Shall we standardize internal message with royalties which markets send to the author?
+1. Можем ли мы стандартизировать внутреннее сообщение с royalties какие рынки отправляют автору?
 
-# Future possibilities
+# Будущие возможности
 
-None
+Нет
