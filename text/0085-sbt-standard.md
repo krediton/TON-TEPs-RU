@@ -1,233 +1,207 @@
 - **TEP**: [85](https://github.com/ton-blockchain/TEPs/pull/85)
-- **title**: СБТ Договор
-- **статус**: Активна
-- **Тип**: Контрактный Интерфейс
-- **Авторы**: [Олег Баранов](https://github.com/xssnick), [Нарек Abovyan](https://github.com/Naltox), [Кирилл Emelyanenko](https://github.com/EmelyanenkoK), [Олег Андрее](https://github.com/oleganza)
-- **создан**: 09.08.2022
-- **Заменяет**: -
-- \*\*заменено \*\*: -
+- **title**: SBT Contract
+- **status**: Active
+- **type**: Contract Interface
+- **authors**: [Oleg Baranov](https://github.com/xssnick), [Narek Abovyan](https://github.com/Naltox), [Kirill Emelyanenko](https://github.com/EmelyanenkoK), [Oleg Andreev](https://github.com/oleganza)
+- **created**: 09.08.2022
+- **replaces**: -
+- **replaced by**: -
 
 # Summary
 
-Токен с душами (SBT) – это особый вид NFT, который не может быть передан. Он включает в себя факультативный сертификат механики с отзывом от властей и доказательствами владения цепями. Владелец может уничтожить свой SBT в любое время.
+Soul bound token (SBT) is a special kind of NFT which can not be transferred. It includes optional certificate mechanics with revoke by authority and onchain ownership proofs. Holder can destroy his SBT in any time.
 
-# Мотивация
+# Motivation
 
-Существует полезный тип токена, который позволяет предоставить социальные разрешения/роли или сертификаты некоторым пользователям. Например, он может быть использован на рынках для предоставления скидок владельцам ВБТ или университетам для выдачи аттестационных сертификатов в форме SBT. Механизмы с правом собственности позволяют легко доказать любому договору, который Вы являетесь владельцем некоторых SBT.
+There is a useful type of token which allows to give social permissions/roles or certificates to some users. For example, it can be used by marketplaces to give discounts to owners of SBT, or by universities to give attestation certificates in SBT form. Mechanics with ownership proof allows to easily prove to any contract that you are an owner of some SBT.
 
-# Спецификация
+# Specification
 
-SBT реализует [стандартный NFT интерфейс](https://github.com/ton-blockchain/TIPs/issues/62), но `transfer` всегда должен быть отклонен.
+SBT implements [NFT standard interface](https://github.com/ton-blockchain/TIPs/issues/62) but `transfer` should always be rejected.
 
 #### 1. `prove_ownership`
 
-TL-B схема входящего сообщения:
-
+TL-B schema of inbound message:
 ```
 prove_ownership#04ded148 query_id:uint64 dest:MsgAddress 
 forward_payload:^Cell with_content:Bool = InternalMsgBody;
 ```
+`query_id` -  arbitrary request number.
 
-`query_id` - произвольный номер запроса.
+`dest` -  address of the contract to which the ownership of SBT should be proven.
 
-`dest` - адрес контракта, которому должно быть доказано право собственности на ВОТ.
+`forward_payload` - arbitrary data required by target contract.
 
-`forward_payload` - произвольные данные, требуемые целевым контрактом.
+`with_content` - if true, SBT's content cell will be included in message to contract.
 
-`with_content` - если установлен true, SBT контентная ячейка будет включена в сообщение к контракту.
+**Should be rejected if:**
+* Sender address is not the owner's address.
 
-**Должно быть отклонено, если:**
-
-- Адрес отправителя не является адресом владельца.
-
-**Иначе делать:**
-Отправьте сообщение со схемой TL-B для `dest` контракта:
-
+**Otherwise should do:**
+Send message with TL-B schema to `dest` contract:
 ```
 ownership_proof#0524c7ae query_id:uint64 item_id:uint256 owner:MsgAddress 
 data:^Cell revoked_at:uint64 content:(Maybe ^Cell) = InternalMsgBody;
 ```
 
-`query_id` - номер запроса передан в `prove_ownership`.
+`query_id` - request number passed in `prove_ownership`.
 
-`item_id` - идентификатор NFT.
+`item_id` -  id of NFT.
 
-`owner` - адрес текущего владельца.
+`owner` - current owner's address.
 
-`data` - ячейка данных передана в `prove_ownership`.
+`data` - data cell passed in `prove_ownership`.
 
-`revoked_at` - unix время, когда SBT был отозван, 0, если это не было.
+`revoked_at` - unix time when SBT was revoked, 0 if it was not.
 
-`content` - содержимое NFT, оно передается, если `with_content` был true в `prove_ownership`.
+`content` - NFT's content, it is passed if `with_content` was true in `prove_ownership`.
 
 #### 2. `request_owner`
 
-TL-B схема входящего сообщения:
-
+TL-B schema of inbound message:
 ```
 request_owner#d0c3bfea query_id:uint64 dest:MsgAddress 
 forward_payload:^Cell with_content:Bool = InternalMsgBody;
 ```
+`query_id` -  arbitrary request number.
 
-`query_id` - произвольный номер запроса.
+`dest` -  address of the contract to which the ownership of SBT should be proven.
 
-`dest` - адрес контракта, которому должно быть доказано право собственности на ВОТ.
+`forward_payload` - arbitrary data required by target contract.
 
-`forward_payload` - произвольные данные, требуемые целевым контрактом.
+`with_content` - if true, SBT's content cell will be included in message to contract.
 
-`with_content` - если установлен true, SBT контентная ячейка будет включена в сообщение к контракту.
+**Should do:**
 
-**Должно:**
-
-Отправить сообщение с TL-B схемой для «dest» контракта:
-
+Send message with TL-B schema to `dest` contract:
 ```
 owner_info#0dd607e3 query_id:uint64 item_id:uint256 initiator:MsgAddress owner:MsgAddress 
 data:^Cell revoked_at:uint64 content:(Maybe ^Cell) = InternalMsgBody;
 ```
 
-`query_id` - номер запроса передан в `prove_ownership`.
+`query_id` - request number passed in `prove_ownership`.
 
-`item_id` - идентификатор NFT.
+`item_id` -  id of NFT.
 
-`initiator` - адрес инициатора запроса.
+`initiator` - address of request initiator.
 
-`owner` - адрес текущего владельца.
+`owner` - current owner's address.
 
-`data` - ячейка данных передана в `prove_ownership`.
+`data` - data cell passed in `prove_ownership`.
 
-`revoked_at` - unix время, когда SBT был отозван, 0, если это не было.
+`revoked_at` - unix time when SBT was revoked, 0 if it was not.
 
-`content` - содержимое SBT, передается если `with_content` был true в `request_owner`.
+`content` - SBT's content, it is passed if `with_content` was true in `request_owner`.
 
-#### 3. `уничтожить`
+#### 3. `destroy`
 
-Схема TL-B внутреннего сообщения:
-
+TL-B schema of an internal message:
 ```
-уничтожить #1f04537a query_id:uint64 = InternalMsgBody;
+destroy#1f04537a query_id:uint64 = InternalMsgBody;
 ```
+`query_id` -  arbitrary request number.
 
-`query_id` - произвольный номер запроса.
+Should be rejected if:
+* Sender address is not an owner's address.
 
-Должно быть отклонено, если:
-
-- Адрес отправителя не является адресом владельца.
-
-В противном случае следует сделать:
-
-- Указать адрес владельца и его право на нуль.
-- Отправить сообщение отправителю со схемой `excesses#d53276db query_id:uint64 = InternalMsgBody;`, которая передаст сумму баланса контракта.
+Otherwise should do:
+ * Set owner's address and authority to null.
+ * Send message to sender with schema `excesses#d53276db query_id:uint64 = InternalMsgBody;` that will pass contract's balance amount.
 
 #### 4. `revoke`
 
-TL-B схема входящего сообщения:
-
+TL-B schema of inbound message:
 ```
 revoke#6f89f5e3 query_id:uint64 = InternalMsgBody;
 ```
+`query_id` -  arbitrary request number.
 
-`query_id` - произвольный номер запроса.
+**Should be rejected if:**
+* Sender address is not an authority's address.
+* Was already revoked
 
-**Должно быть отклонено, если:**
+**Otherwise should do:**
+Set revoked_at to current unix time.
 
-- Адрес отправителя не является адресом администрации.
-- Был уже отозван
+**GET methods**
+1. `get_nft_data()` - same as in [NFT standard](https://github.com/ton-blockchain/TIPs/issues/62).
+2. `get_authority_address()` - returns `slice`, that is authority's address. Authority can revoke SBT. 
+**This method is mandatory for SBT, if there is no authority it should return addr_none (2 zero bits)**
+3. `get_revoked_time()` - returns `int`, that is unix time of when it was revoked. It is 0 when not revoked.
 
-**Иначе должно делать:**
-Установить аннулирован_на текущее unix время.
-
-**ПОЛУЧИТЬ методы**
-
-1. `get_nft_data()` - то же, что и в [стандарте NFT](https://github.com/ton-blockchain/TIPs/issues/62).
-2. `get_authority_address()` - возвращает `slice`, это адрес автора. Полномочия могут отозвать SBT.
-   **Этот метод является обязательным для SBT, если нет прав доступа, он должен вернуть addr_none (2ноль битов)**
-3. `get_revoked_time()` - возвращает `int`, то есть unix время отозванного. 0 когда не отозвано.
-
-### Пример осуществления
-
+### Implementation example
 https://github.com/getgems-io/nft-contracts/blob/main/packages/contracts/sources/sbt-item.fc
 
-# Инструкция
+# Guide
 
 #### Minting
+It can be done using basic NFT collection, SBT should be an item. In mint message additionally authority address should be passed, [after content](https://github.com/getgems-io/nft-contracts/blob/main/packages/contracts/sources/sbt-item.fc#L90). 
 
-Это может быть сделано с помощью базовой коллекции NFT, ВБТ должен быть товаром. В mint сообщение дополнительно следует передать адрес авторизации, [после содержимого](https://github.com/getgems-io/nft-contracts/blob/main/packages/contracts/sources/sbt-item.fc#L90).
+Before mint, issuer is recommended to check the wallet code and confirm that it is standartized wallet and not some transferrable contract that can be sold to 3rd parties.
 
-До мяты, эмитенту рекомендуется проверить код кошелька и подтвердить, что он является стандартным кошельком, а не передаваемым договором, который может быть продан третьим лицам.
+#### Proving you ownership to contracts
+SBT contracts has a feature that let you implement interesting mechanics with contracts by proving ownership onchain. 
 
-#### Предоставление вам права собственности на контракты
+You can send message to SBT, and it will proxify message to target contract with its index, owner's address and initiator address in body, together with any useful for contract payload, 
+this way target contract could know that you are owner of SBT which relates to expected collection. Contract could know that SBT relates to collection by calculating address of SBT using code and index, and comparing it with sender.
 
-Контракты SBT позволяют Вам внедрять интересные механические механизмы с контрактами, доказывая собственность в цепочке.
+There are 2 methods which allow to use this functionality, **ownership proof** and **ownership info**. 
+The difference is that proof can be called only by SBT owner, so it is preferred to use when you need to accept messages only from owner, for example votes in DAO.
 
-You can send message to SBT, and it will proxify message to target contract with its index, owner's address and initiator address in body, together with any useful for contract payload,
-this way target contract could know that you are owner of SBT which relates to expected collection. Контракт мог бы знать, что ВБТ связан с сбором данных путем расчета адреса ВБТ с использованием кода и индекса и сравнения его с отправителем.
-
-Существует 2 метода, которые позволяют использовать эту функциональность, **надежность** и **информацию о собственности**.
-Разница в том, что доказательство может называться только владельцем SBT, поэтому предпочтительно использовать при приеме сообщений только от владельца, например в DAO.
-
-##### Доказательство права собственности
-
-**Владелец SBT** может отправить сообщение SBT с помощью этой схемы:
-
+##### Ownership proof
+**SBT owner** can send message to SBT with this schema:
 ```
 prove_ownership#04ded148 query_id:uint64 dest:MsgAddress 
 forward_payload:^Cell with_content:Bool = InternalMsgBody;
 ```
-
-После этого SBT отправит перевод в `dest` со схемой:
-
+After that SBT will send transfer to `dest` with scheme:
 ```
 ownership_proof#0524c7ae query_id:uint64 item_id:uint256 owner:MsgAddress 
 data:^Cell revoked_at:uint64 content:(Maybe ^Cell)
 ```
 
-##### Информация о владельце
-
-\*\*Любой \*\* может отправить сообщение на SBT с помощью этой схемы:
-
+##### Ownership info
+**anyone** can send message to SBT with this schema:
 ```
 request_owner#d0c3bfea query_id:uint64 dest:MsgAddress 
 forward_payload:^Cell with_content:Bool = InternalMsgBody;
 ```
-
-После этого SBT отправит перевод в `dest` со схемой:
-
+After that SBT will send transfer to `dest` with scheme:
 ```
 owner_info#0dd607e3 query_id:uint64 item_id:uint256 initiator:MsgAddress owner:MsgAddress 
 data:^Cell revoked_at:uint64 content:(Maybe ^Cell)
 ```
 
-#### Пример проверки контракта SBT
+#### Verify SBT contract example
 
 ```C
 int op::ownership_proof() asm "0x0524c7ae PUSHINT";
 
-int equal_slices (кусок а, кусок b) asm "SDEQ";
+int equal_slices (slice a, slice b) asm "SDEQ";
 
 _ load_data() {
-    Slice ds = get_data(). egin_parse();
+    slice ds = get_data().begin_parse();
 
     return (
-        ds~load_msg_addr(), ;; collection_addr
-        ds~load_ref() ; sbt_code
+        ds~load_msg_addr(),    ;; collection_addr
+        ds~load_ref()          ;; sbt_code
     );
 }
 
-calculate_sbt_address(slice collection_addr, ячейка sbt_item_code, int wc, int index) {
-  Данные ячейки = begin_cell(). tore_uint(индекс, 64).store_slice(collection_addr). nd_cell();
-  ячейка state_init = begin_cell().store_uint(0, 2).store_dict(sbt_item_code).store_dict(data).store_uint(0, 1). nd_cell();
+slice calculate_sbt_address(slice collection_addr, cell sbt_item_code, int wc, int index) {
+  cell data = begin_cell().store_uint(index, 64).store_slice(collection_addr).end_cell();
+  cell state_init = begin_cell().store_uint(0, 2).store_dict(sbt_item_code).store_dict(data).store_uint(0, 1).end_cell();
 
-  return begin_cell(). tore_uint(4, 3)
-                     . tore_int(wc, 8)
-                     . tore_uint(cell_hash(state_init), 256)
-                     . nd_cell()
-                     . egin_parse();
+  return begin_cell().store_uint(4, 3)
+                     .store_int(wc, 8)
+                     .store_uint(cell_hash(state_init), 256)
+                     .end_cell()
+                     .begin_parse();
 }
 
 
 () recv_internal(int balance, int msg_value, cell in_msg_full, slice in_msg) impure {
-  Slice cs = in_msg_full. egin_parse();
+  slice cs = in_msg_full.begin_parse();
   int flags = cs~load_uint(4);
 
   slice sender_address = cs~load_msg_addr();
@@ -238,53 +212,52 @@ calculate_sbt_address(slice collection_addr, ячейка sbt_item_code, int wc,
   if (op == op::ownership_proof()) {
     int id = in_msg~load_uint(256);
 
-    (коллекция кусочков, sbt_code) = load_data();
-    throw_unless(403, equal_slices(sender_address, collection_addr. alculate_sbt_address(sbt_code, 0, id));
+    (slice collection_addr, cell sbt_code) = load_data();
+    throw_unless(403, equal_slices(sender_address, collection_addr.calculate_sbt_address(sbt_code, 0, id)));
 
-    Slice owner_addr = in_msg~load_msg_addr();
-    гена = in_msg~load_ref();
+    slice owner_addr = in_msg~load_msg_addr();
+    cell payload = in_msg~load_ref();
     
     int revoked_at = in_msg~load_uint(64);
-    throw_if(403, отозвано_at > 0);
+    throw_if(403, revoked_at > 0);
     
     int with_content = in_msg~load_uint(1);
-    if (with_content ! 0) {
-        ячейки sbt_content = in_msg~load_ref();
+    if (with_content != 0) {
+        cell sbt_content = in_msg~load_ref();
     }
     
     ;;
-    ; sbt проверен, выполните что-нибудь
+    ;; sbt verified, do something
     ;;
 
-    возврат ();
+    return ();
   }
 
-  броска (0xff);
+  throw(0xffff);
 }
 ```
 
-# Обоснование и альтернативы
+# Rationale and alternatives
 
-- **Почему именно эта конструкция лучше всего подходит к пространству возможных дизайнов?**
+- **Why is this design the best in the space of possible designs?**
 
-Этот проект позволяет нам использовать SBT в качестве сертификатов с отозванными и onchain доказательствами, и в то же время позволяет сделать истинное SBT если не задан авторитет.
+This design allows us to use SBT as certificates, with revoke and onchain proofs, and in the same time allows to make true SBT if authority in not set.
 
-- **Какие другие проекты были рассмотрены и в чем смысл их не выбирать?**
+- **What other designs have been considered and what is the rationale for not choosing them?**
 
-Первоначально была рассмотрена конструкция по аналогии с ETH с выделенными адресами токенами, однако она была расширена с использованием полномасштабных onchain доказательств и варианта аннулирования.
+Initially, the design similar to ETH with address-bounded tokens was considered, but it was extended with usefull onchain proofs and revoke option.
 
-- **Каково влияние этого не делает?**
+- **What is the impact of not doing this?**
 
-В настоящее время TON не имеет никакого стандарта для токенов владельца, поэтому проблема заключается в выпуске токенов, которые не могут быть переданы третьим сторонам. Таким образом, если мы игнорируем этот или похожий стандарт, который вводит такую механику, TON может пропустить некоторые интересные и перспективные продукты.
+Currently, TON have no owner-bounded token standard, so it is a problem to issue tokens that cannot be transferred to 3rd parties. So, if we ignore this or any similar standard that introduces such mechanics, TON could miss some interesting and perspective products.
 
-# Предыдущее искусство
+# Prior art
 
-В ETH ([EIP-4973 ABT](https://eips.ethereum.org/EIPS/eip-4973)) - SBT был сделан как NFT, который вообще не мог быть передан между счетами. Мы сделали то же самое, но расширили логику доказательствами onchin, и добавил авторитет, который может отозвать, поэтому SBT может быть использован в качестве полнофункционального сертификата.
+In ETH ([EIP-4973 ABT](https://eips.ethereum.org/EIPS/eip-4973)) - SBT was done as an NFT which could not be transferred between accounts at all. We did tha same but extended the logic with onchain proofs, and added authority which can revoke, so SBT can be used as fully functional certificate.
+# Drawbacks
 
-# Ничья
+[EIP-4973 ABT](https://eips.ethereum.org/EIPS/eip-4973) has equip/unequip mechanics which allows to show/hide SBT temporarily. In current proposal we can only destroy SBT. Actually not sure that show/hide logic is needed for us. 
 
-[EIP-4973 ABT](https://eips.ethereum.org/EIPS/eip-4973) имеет оборудован/unэкипировать механику, которая позволяет временно показать/скрыть SBT. В нынешнем предложении мы можем лишь уничтожить ВОТ. На самом деле не уверен, что для нас необходима логика показа/скрытия.
+# Future possibilities
 
-# Будущие возможности
-
-Стандарт выглядит закончен.
+Standard looks finalized.
