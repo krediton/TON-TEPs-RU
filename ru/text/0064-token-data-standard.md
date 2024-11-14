@@ -1,23 +1,23 @@
 - **TEP**: [64](https://github.com/ton-blockchain/TEPs/pull/3)
 - **title**: Token Data Standard
-- **status**: Active
-- **type**: Contract Interface
+- **статус**: Активна
+- **Тип**: Контрактный Интерфейс
 - **authors**: [EmelyanenkoK](https://github.com/EmelyanenkoK), [Tolya](https://github.com/tolya-yanot)
 - **created**: 03.02.2022
-- **replaces**: -
-- **replaced by**: -
+- **Заменяет**: -
+- \*\*заменено \*\*: -
 
 # Summary
 
 A standard interface for tokens (meta)data (in particular [NFT](https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md) or [Jettons](https://github.com/ton-blockchain/TEPs/blob/master/text/0074-jettons-standard.md)).
 
-# Motivation
+# Мотивация
 
 For applications like wallets or marketplaces it is quite useful to be able automatically retrieve information for display. Token data standard allows to simplify this process and uniform the way of token display across different applications.
 
-# Guide
+# Инструкция
 
-Each token (and also NFT Collection) has its own metadata. It contains some info about token, such as title and associated image. Metadata can be stored offchain (smart contract will contain only a link to json) or onchain (all data will be stored in smart contract).
+Each token (and also NFT Collection) has its own metadata. It contains some info about token, such as title and associated image. Метаданные могут храниться вне сети (смарт-контракт будет содержать только ссылку на json) или onchain (все данные будут храниться в смарт-контракте).
 
 ## NFT Collection metadata example (offchain)
 
@@ -69,7 +69,7 @@ Metadata:
 
 This example shows us that it is possible to embed an image directly in json, without additional links.
 
-# Specification
+# Спецификация
 
 ## Content representation
 
@@ -151,32 +151,32 @@ Note, that while TL-B scheme does not constrain bit size of each chunk it is exp
 - "currency" - display as currency (default value).
 - "game" - display for games. It should be displayed as NFT, but at the same time display the number of jettons considering the `amount_style`
 
-# Drawbacks
+# Ничья
 
-None
+Нет
 
-# Rationale and alternatives
+# Обоснование и альтернативы
 
 Proposed standard allows developers to extend (meta)data on demand by introducing new fields without risk of collisions. An alternative to this approach could be [predefined set of data fields](https://github.com/ton-blockchain/TIPs/issues/79) which, from first glance, could save some storage and gas fees. However, there is no reason not to store the metadata in some compact predefined form in the contract and then just render it in get method (which works offline and thus doesn't waste gas) as Data Standard suggested, allowing lower fees without sacrificing flexibility.
 
 While on-chain data storage is preferred, off-chain/semi-chain options allow flexibly adapt tokens for required usecases.
 
-# Prior art
+# Предыдущее искусство
 
 1. [EIP-721](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md)
 2. [OpenSea metadata guide](https://docs.opensea.io/docs/metadata-standards)
 
-# Unresolved questions
+# Нерешенные вопросы
 
 1. Shall we authenticate offchain data to prevent it from changing? ([NoelJacob](https://github.com/ton-blockchain/TIPs/issues/64#issuecomment-1029900008))
 2. Shall we support semichain layout, where only some metadata fields may be stored onchain? ([tvorogme](https://github.com/ton-blockchain/TIPs/issues/64#issuecomment-1028622110))
 3. Shall we standardize attributes, traits, and non-image content? ([tolya-yanot](https://github.com/ton-blockchain/TIPs/issues/64#issuecomment-1041919338))
 
-# Future possibilities
+# Будущие возможности
 
-None
+Нет
 
-# Changelog
+# Список изменений
 
 - 14 May 2022 - the standard is now used not only for NFT, but for all tokens in the TON. Added section "Jetton metadata attributes".
 
