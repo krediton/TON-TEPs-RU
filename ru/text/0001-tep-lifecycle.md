@@ -1,115 +1,115 @@
 - **TEP**: [1](https://github.com/ton-blockchain/TEPs/pull/1)
-- **title**: TEP Lifecycle
-- **status**: Active
+- **title**: Жизненный цикл TEP
+- **статус**: Активна
 - **type**: Meta
-- **authors**: [Vladimir Lebedev](https://github.com/hacker-volodya)
-- **created**: 11.06.2022
-- **replaces**: -
-- **replaced by**: -
+- **авторы**: [Владимир Лебедев](https://github.com/hacker-volodya)
+- **создан**: 11.06.2022
+- **Заменяет**: -
+- \*\*заменено \*\*: -
 
 # Summary
 
-This document introduces TEP -- TON Enhancement Proposal. TEP is a design document which describes some part of TON, for example ADNL (network protocol between nodes) or NFT (interface which is common to smart contracts of a single type).
+В этом документе представлено предложение TON Enhancement Proposal. TEP - это проектный документ, описывающий часть TON, Например, ADNL (сетевой протокол между узлами) или NFT (интерфейс, который является общим для смарт-контрактов одного типа).
 
-# Motivation
+# Мотивация
 
-Current TIP system is too informal to manage the process of writing, discussing and accepting new standards efficiently. TON needs a new proposal process, which will encourage authors to do a deep dive into the topic and write down all points to have a constructive discussion with the community.
+Текущая система TIP является слишком неформальной для эффективного управления процессом написания, обсуждения и принятия новых стандартов. TON нуждается в новом процессе предложения, , который побуждает авторов сделать глубокое погружение в тему и запись всех пунктов в конструктивную дискуссию с сообществом.
 
-# Guide
+# Инструкция
 
-## For authors
+## Для авторов
 
-If you have an idea for proposal, discuss it with community, for example in TON Dev chat ([en](https://t.me/tondev_eng)/[ru](https://t.me/tondev)). Discussion may help you to quickly identify potential gaps and not to spend a lot of time on writing actual proposal if you realized that your idea is not so clear as you thought before. Also you may look through the [TEP template](/0000-template.md) and think about each section first before writing.
+Если у вас есть идея для предложения, обсуждайте ее с сообществом, например в чате TON Dev ([en](https://t.me/tondev_eng)/[ru](https://t.me/tondev)). Обсуждение может помочь вам быстро определить потенциальные пробелы и не тратить много времени на написание фактического предложения, если вы поняли, что ваша идея не так понятна, как вы думали раньше. Также вы можете посмотреть [TEP шаблон](/0000-template.md) и подумать о каждом разделе перед написанием.
 
-When you feel yourself ready to write, just fork this repo and copy the template to `./text/0000-my-new-standard.md`, where "my-new-standard" is a short title of your TEP. Fill all sections and answer questions stated in template. If you need to include images or another additional files, upload them to `./assets/0000-my-new-standard/` folder.
+Когда вы чувствуете себя готовым писать, просто форкните этот репозиторий и скопируйте шаблон в `. text/0000-my-new-standard.md`, где "my-new-standard" - короткое название вашего TEP. Заполните все разделы и ответы на вопросы, указанные в шаблоне. Если вам нужно включить изображения или другие дополнительные файлы, загрузите их в папку `./assets/00-my-new-standard/`.
 
-Try to answer questions in the template as fully as possible. When the proposal is ready, open a [pull request](https://github.com/ton-blockchain/TEPs/pulls) and be ready to discuss your proposal with the community. During the review process, make changes to your pull request if it is necessary
+Постарайтесь ответить на вопросы в шаблоне максимально полностью. Когда предложение готово, откройте [запрос на слияние](https://github.com/ton-blockchain/TEPs/pulls) и будьте готовы обсудить ваше предложение с сообществом. Во время проверки внесите изменения в ваш запрос на слияние, если это необходимо
 
-## For reviewers
+## Для проверяющих
 
-After a pull request was created, any developer with corresponding experience (either from TON Foundation or community) may request repo maintainers to be assigned as a reviewer for the pull request. Anyone may comment the pull request, but reviewers has to vote, whether to merge or to reject the pull request. Once the majority votes for or against, TEP will enter its final comment period.
+После создания Pull Request любой разработчик, имеющий соответствующий опыт (либо от TON Foundation, либо от сообщества), может попросить сопровождающих репозитория быть назначен в качестве рецензента для запроса на слияние. Любой может прокомментировать запрос на слияние, но рецензенты должны голосовать, либо объединить, либо отклонить запрос на слияние. Как только большинство голосов за или против TEP войдет свой окончательный период комментариев.
 
-FCP lasts 10 calendar days, in this period the TEP is advertised widely. This way all stakeholders has a chance to say their final comments
-on the TEP. Sometimes the FCP has to be cancelled because new arguments/ideas were raised. In this case the discussion restarts and then reviewers has to vote again.
+FCP длится 10 календарных дней, в этот период широко рекламируется TEP. This way all stakeholders has a chance to say their final comments
+on the TEP. Иногда FCP необходимо отменить из-за появления новых аргументов/идей. В этом случае обсуждение перезапускается и затем рецензенты должны проголосовать за.
 
-# Specification
+# Спецификация
 
-This section describes your feature formally. It contains requirements, which must be followed in order to implement your TEP. To keep things formal, it is convenient to follow [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt). You should include following text at the beginning of this section:
+Этот раздел формально описывает вашу функцию. Он содержит требования, которые должны соблюдаться для реализации вашей ТЕП. Чтобы поддерживать формальность, удобно следовать инструкции [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt). В начале этого раздела следует включить следующий текст:
 
-> The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be interpreted as described in RFC 2119.
+> Ключевые слова “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “HOULD NOT”, “HOULD NOT”, “ В настоящем документе "РЕКОМЕНДАЦИЯ", "МАЙ" и "OPTIONAL" следует толковать как это описано в RFC 2119.
 
-## TEP Roles
+## Роли TEP
 
-1. Author
-2. Editor
-3. Reviewer
+1. Автор
+2. Редактор
+3. Рецензент
 
-## TEP Creation
+## Создание TEP
 
-The author SHOULD copy [TEP template](/0000-template.md) to `./text/0000-my-new-standard.md` and fill all sections. The author MAY include additional files, such as images and MUST place them in `./assets/0000-my-new-standard/`. All sections described below are mandatory.
+SHOULD скопируйте [TEP template](/0000-template.md) в `./text/0000-my-new-standard.md` и заполните все разделы. Автор MAY включает дополнительные файлы, такие как изображения и ДОЛЖНО поместить их в `./assets/0000-my-new-standard/`. Все разделы, описанные ниже, являются обязательными.
 
-### Header
+### Заголовок
 
-Contains some TEP properties: TEP id and pull request link, title, status, type, authors, links to replaced TEPs and links to TEPs which replaces this TEP.
+Содержит некоторые свойства TEP: TEP id и pull request ссылка, заголовок, статус, тип, авторы, ссылки на замену TEP и ссылки на TEP, которые заменяют этот TEP.
 
-### Body
+### Тело
 
 1. Summary
-2. Motivation
-3. Guide
-4. Specification
-5. Drawbacks
-6. Rationale and alternatives
-7. Prior art
-8. Unresolved questions
-9. Future possibilities
+2. Мотивация
+3. Инструкция
+4. Спецификация
+5. Ничья
+6. Обоснование и альтернативы
+7. Предыдущее искусство
+8. Нерешенные вопросы
+9. Будущие возможности
 
-## TEP Lifecycle
+## Жизненный цикл TEP
 
-### Draft
+### Черновик
 
-Author prepares TEP and opens a pull request to this repo. If necessary, Author MAY NOT start the review process, for example, if there is some unresolved questions, which must be solved before starting the review process. However, Editor MAY close the pull request in Draft state if there is no activity for the long time.
+Автор готовит TEP и открывает запрос на слияние в этот репозиторий. При необходимости автор НЕ может начать процесс проверки, например, если есть некоторые нерешенные вопросы, которые должны быть решены перед началом процесса рассмотрения. Тем не менее, Редактор может закрыть запрос на слияние в состоянии Draft при отсутствии активности в течение длительного времени.
 
-### Review
+### Обзор
 
-When the TEP is ready, Author has to start the review process by changing TEP state to _Review_. Editor checks the pull request and then reviewers has to be assigned by editor (author or anyone else MAY propose reviewers to be assigned to the pull request). Reviewers share their opinions in pull request, and if there was a discussion somewhere not in pull request, they MUST summarize it in pull request comments. Reviewers has to vote for or against the proposal. Once the majority agrees, Final Comment Period starts for 10 calendar days. Anyone MAY share their thoughts about this TEP, and Editor may cancel the FCP if there is a reason for it. In this case, the review process restarts, and reviewers MUST vote one more time in order to finish pull request. When FCP is over, Editor changes the state of TEP from Review to either Active or Rejected.
+Когда TEP будет готов, автору необходимо начать процесс обзора, изменив состояние TEP на _Обзор_. Редактор проверяет запрос на слияние, а затем проверяющий должен быть назначен редактором (автор или кто-либо другой может предложить назначить редакторам на слияние). Рецензенты разделяют свои мнения в Pull Request'е, а также если обсуждались где-то не в pull-Request'е, они ДОЛЖНЫ обобщить его в получении комментариев запроса. Рецензенты должны голосовать за предложение или против него. После согласия большинства, окончательный период Комментария начинается в течение 10 календарных дней. Любой человек может поделиться своими мыслями об этом TEP, и Редактор может отменить FCP, если есть причина. В этом случае процесс обзора перезапускается, и участники рецензентов должны проголосовать еще раз, чтобы завершить запрос на слияние. По окончании работы FCP Редактор меняет состояние TEP с Обзора на Активный или Отклоненный.
 
-### Active
+### Активный
 
-When the TEP was accepted by reviewers, it becomes Active. It is possible to make minor changes to active TEPs in order to keep TEPs up to date with the actual implementation details.
+После принятия ТЕП участниками процесса рассмотрения он становится Актуальным. Можно внести незначительные изменения в активные ТЕП для того, чтобы поддерживать ТЕП в актуальном состоянии с фактическими деталями реализации.
 
-### Rejected
+### Отклонено
 
-When the TEP is rejected, corresponding pull request MUST NOT be merged, instead it MAY be closed. However, it is ok to keep rejected pull requests open, so the Author CAN make changes to the TEP and apply for review again without losing previous discussion.
+Когда TEP отклонен, соответствующий запрос на слияние НЕ ДОЛЖНО быть объединен, вместо этого может быть закрыт. Однако оставить отклоненными pull-запросы открытыми, так что автор может внести изменения в TEP и подать заявку на отзыв снова без потери предыдущего обсуждения.
 
-### Replaced
+### Заменено
 
-At some point TEP may be deprecated. When this occurs, its state changes to Replaced. It is also necessary to provide some info about replacement in TEP header: "replaces" field points from new TEP to the old one, and "replaced by" points from the old TEP to the new.
+В какой-то момент TEP может быть устаревшим. Когда это происходит, его состояние меняется на замену. Также необходимо предоставить некоторую информацию о замене в заголовке TEP: "Заменяет" точки поля от нового TEP до старого, и "заменить точками по" от старого TEP к новому.
 
-# Drawbacks
+# Ничья
 
-## Who has to manage the process to get pull requests closed?
+## Кто должен управлять процессом для получения Pull Request'ов?
 
-There is a risk that reviewers will not review pull requests in time, because there is no explicit manager or product owner, and motivation of reviewers is not clear.
+Существует риск того, что рецензенты не будут своевременно рассматривать Pull Request'ы, потому что нет явного менеджера или владельца продукта, а мотивация рецензентов не ясна.
 
-# Rationale and alternatives
+# Обоснование и альтернативы
 
-**Section list** was completely taken from Rust RFC. It motivates an author to do a deep dive into the TEP argumentation before starting the discussion with the community.
+**Список секций** был полностью взят из RFC. Оно побуждает автора сделать глубокий дайв аргументацию TEP перед началом обсуждения с сообществом.
 
-**RFC 822 header** from PEP/BIP/EIP/NEP was replaced by Rust RFC header, because it helps to improve user experience with links to TEP pull request and to the author of TEP.
+**Заголовок RFC 822** из PEP/BIP/EIP/NEP был заменен заголовком Rust RFC, потому что это помогает улучшить пользовательский опыт со ссылками на Pull Request TEP и автору TEP.
 
-In NEP, proposals are finalized before the actual pull request merging and proposal review. It unnecessarily sophisticates the process of review, because it is not easy for author to make small fixes to already merged pull request. So, to simplify all the things, in TEP entire review process is kept in pull request, so it is easy to do a review "ping-pong", when the author makes quick fixes during the review to achieve consensus with the community.
+В рамках НПД предложения дорабатываются до фактического запроса на слияние и обзор предложений. Это неоправданно изощренный процесс обзора, потому что автору нелегко сделать небольшие исправления для уже объединенного Pull request. Итак, чтобы упростить все вещи, в TEP весь процесс рецензирования сохраняется в запросе, так что легко сделать отзыв "пинг-понг", когда автор быстро исправляет в ходе обзора, чтобы достичь консенсуса с сообществом.
 
-# Prior art
+# Предыдущее искусство
 
-- Ethereum Improvement Proposals: [EIP-1](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1.md)
-- Near Enhancement Proposals: [NEP-1](https://github.com/near/NEPs/blob/master/neps/nep-0001.md)
+- Предложения об улучшении Ethereum: [EIP-1](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1.md)
+- Ближайшие предложения по улучшению: [NEP-1](https://github.com/near/NEPs/blob/master/neps/nep-0001.md)
 - [Rust RFCs](https://github.com/rust-lang/rfcs)
 
-# Unresolved questions
+# Нерешенные вопросы
 
-1. Who has to assign reviewers? Who exactly can be a reviewer? How they will prove their experience and who will check it?
+1. Кто должен назначать рецензентов? Кто именно может быть рецензентом? Как они докажут свой опыт и кто проверит его?
 
-# Future possibilities
+# Будущие возможности
 
-None
+Нет
