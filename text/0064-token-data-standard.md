@@ -1,29 +1,30 @@
 - **TEP**: [64](https://github.com/ton-blockchain/TEPs/pull/3)
 - **title**: Token Data Standard
-- **status**: Active
-- **type**: Contract Interface
-- **authors**: [EmelyanenkoK](https://github.com/EmelyanenkoK), [Tolya](https://github.com/tolya-yanot)
+- **статус**: Активна
+- **Тип**: Контрактный Интерфейс
+- **авторы**: [EmelyanenkoK](https://github.com/EmelyanenkoK), [Tolya](https://github.com/tolya-yanot)
 - **created**: 03.02.2022
-- **replaces**: -
-- **replaced by**: -
+- **Заменяет**: -
+- \*\*заменено \*\*: -
 
 # Summary
 
 A standard interface for tokens (meta)data (in particular [NFT](https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md) or [Jettons](https://github.com/ton-blockchain/TEPs/blob/master/text/0074-jettons-standard.md)).
 
-# Motivation
+# Мотивация
 
 For applications like wallets or marketplaces it is quite useful to be able automatically retrieve information for display. Token data standard allows to simplify this process and uniform the way of token display across different applications.
 
-# Guide
+# Инструкция
 
-Each token (and also NFT Collection) has its own metadata. It contains some info about token, such as title and associated image. Metadata can be stored offchain (smart contract will contain only a link to json) or onchain (all data will be stored in smart contract).
+Each token (and also NFT Collection) has its own metadata. It contains some info about token, such as title and associated image. Метаданные могут храниться вне сети (смарт-контракт будет содержать только ссылку на json) или onchain (все данные будут храниться в смарт-контракте).
 
 ## NFT Collection metadata example (offchain)
 
 Deployed in mainnet at address: `EQD7Qtnas8qpMvT7-Z634_6G60DGp02owte5NnEjaWq6hb7v` ([explorer.tonnft.tools](https://explorer.tonnft.tools/collection/EQD7Qtnas8qpMvT7-Z634_6G60DGp02owte5NnEjaWq6hb7v))
 
 Metadata:
+
 ```json
 {
    "image": "https://s.getgems.io/nft/b/c/62fba50217c3fe3cbaad9e7f/image.png",
@@ -39,6 +40,7 @@ Metadata:
 Deployed in mainnet at address: `EQA5q4UveXaw6zx359QtgYh1L6c18X0OiAcQPhlkXufwQjOA` ([explorer.tonnft.tools](https://explorer.tonnft.tools/nft/EQA5q4UveXaw6zx359QtgYh1L6c18X0OiAcQPhlkXufwQjOA))
 
 Metadata:
+
 ```json
 {
    "name": "TON Smart Challenge #2 Winners Trophy",
@@ -54,6 +56,7 @@ Metadata:
 Deployed in mainnet at address: `EQD0vdSA_NedR9uvbgN9EikRX-suesDxGeFg69XQMavfLqIw` ([ton.cx](https://ton.cx/address/EQD0vdSA_NedR9uvbgN9EikRX-suesDxGeFg69XQMavfLqIw))
 
 Metadata:
+
 ```json
 {
    "name": "Huebel Bolt",
@@ -66,9 +69,10 @@ Metadata:
 
 This example shows us that it is possible to embed an image directly in json, without additional links.
 
-# Specification
+# Спецификация
 
 ## Content representation
+
 Three options can be used:
 
 1. **Off-chain content layout**
@@ -85,6 +89,7 @@ Three options can be used:
    In case of collisions (the field exists in both off-chain data and on-chain data), on-chain values are used.
 
 ## Data serialization
+
 Data that does not fit in one cell can be stored in two ways:
 
 1. **Snake format** when we store part of the data in a cell and the rest of the data in the first child cell (and so recursively).
@@ -106,6 +111,7 @@ Data that fits into one cell is stored in "Snake format".
 If the prefix is not `0x00` or `0x01`, then the data is probably encoded by the TL-B schema (relating to a specific smart contract), for example, like in the [DNS contract](https://github.com/ton-blockchain/TEPs/blob/master/text/0081-dns-standard.md#dns-records).
 
 ## Informal TL-B scheme:
+
 ```
 text#_ {n:#} data:(SnakeData ~n) = Text;
 snake#00 {n:#} data:(SnakeData ~n) = ContentData;
@@ -117,6 +123,7 @@ offchain#01 uri:Text = FullContent;
 Note, that while TL-B scheme does not constrain bit size of each chunk it is expected that all chunks contain ceil number of bytes.
 
 ## NFT metadata attributes
+
 1. `uri` - Optional. Used by "Semi-chain content layout". ASCII string. A URI pointing to JSON document with metadata.
 2. `name` - Optional. UTF8 string. Identifies the asset.
 3. `description` - Optional. UTF8 string. Describes the asset.
@@ -124,6 +131,7 @@ Note, that while TL-B scheme does not constrain bit size of each chunk it is exp
 5. `image_data` - Optional. Either binary representation of the image for onchain layout or base64 for offchain layout.
 
 ## Jetton metadata attributes
+
 1. `uri` - Optional. Used by "Semi-chain content layout". ASCII string. A URI pointing to JSON document with metadata.
 2. `name` - Optional. UTF8 string. The name of the token - e.g. "Example Coin".
 3. `description` - Optional. UTF8 string. Describes the token - e.g. "This is an example jetton for the TON network".
@@ -132,45 +140,48 @@ Note, that while TL-B scheme does not constrain bit size of each chunk it is exp
 6. `symbol` - Optional. UTF8 string. The symbol of the token - e.g. "XMPL". Used in the form "You received 99 XMPL".
 7. `decimals` - Optional. If not specified, 9 is used by default. UTF8 encoded string with number from 0 to 255. The number of decimals the token uses - e.g. 8, means to divide the token amount by 100000000 to get its user representation, while 0 means that tokens are indivisible: user representation of token number should correspond to token amount in wallet-contract storage.
    In case you specify decimals, it is highly recommended that you specify this parameter on-chain and that the smart contract code ensures that this parameter is immutable.
-8. `amount_style` - Optional. Needed by external applications to understand which format for displaying the number of jettons. 
- - "n" - number of jettons (default value). If the user has 100 tokens with decimals 0, then display that user has 100 tokens
- - "n-of-total" - the number of jettons out of the total number of issued jettons. For example, totalSupply Jetton = 1000. A user has 100 jettons in the jetton wallet. For example must be displayed in the user's wallet as 100 of 1000 or in any other textual or graphical way to demonstrate the particular from the general.
- - "%" - percentage of jettons from the total number of issued jettons. For example, totalSupply Jetton = 1000. A user has 100 jettons in the jetton wallet. For example it should be displayed in the user's wallet as 10%.
-9. `render_type` - Optional. Needed by external applications to understand which group the jetton belongs to and how to display it.  
- - "currency" - display as currency (default value). 
- - "game" - display for games. It should be displayed as NFT, but at the same time display the number of jettons considering the `amount_style`
+8. `amount_style` - Optional. Needed by external applications to understand which format for displaying the number of jettons.
 
-# Drawbacks
+- "n" - number of jettons (default value). If the user has 100 tokens with decimals 0, then display that user has 100 tokens
+- "n-of-total" - the number of jettons out of the total number of issued jettons. For example, totalSupply Jetton = 1000. A user has 100 jettons in the jetton wallet. For example must be displayed in the user's wallet as 100 of 1000 or in any other textual or graphical way to demonstrate the particular from the general.
+- "%" - percentage of jettons from the total number of issued jettons. For example, totalSupply Jetton = 1000. A user has 100 jettons in the jetton wallet. For example, totalSupply Jetton = 1000.
 
-None
+9. `render_type` - Optional. Needed by external applications to understand which group the jetton belongs to and how to display it.
 
-# Rationale and alternatives
+- "currency" - display as currency (default value).
+- "game" - display for games. It should be displayed as NFT, but at the same time display the number of jettons considering the `amount_style`
+
+# Ничья
+
+Нет
+
+# Обоснование и альтернативы
 
 Proposed standard allows developers to extend (meta)data on demand by introducing new fields without risk of collisions. An alternative to this approach could be [predefined set of data fields](https://github.com/ton-blockchain/TIPs/issues/79) which, from first glance, could save some storage and gas fees. However, there is no reason not to store the metadata in some compact predefined form in the contract and then just render it in get method (which works offline and thus doesn't waste gas) as Data Standard suggested, allowing lower fees without sacrificing flexibility.
 
 While on-chain data storage is preferred, off-chain/semi-chain options allow flexibly adapt tokens for required usecases.
 
-# Prior art
+# Предыдущее искусство
 
 1. [EIP-721](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md)
 2. [OpenSea metadata guide](https://docs.opensea.io/docs/metadata-standards)
 
-# Unresolved questions
+# Нерешенные вопросы
 
 1. Shall we authenticate offchain data to prevent it from changing? ([NoelJacob](https://github.com/ton-blockchain/TIPs/issues/64#issuecomment-1029900008))
 2. Shall we support semichain layout, where only some metadata fields may be stored onchain? ([tvorogme](https://github.com/ton-blockchain/TIPs/issues/64#issuecomment-1028622110))
 3. Shall we standardize attributes, traits, and non-image content? ([tolya-yanot](https://github.com/ton-blockchain/TIPs/issues/64#issuecomment-1041919338))
 
-# Future possibilities
+# Будущие возможности
 
-None
+Нет
 
-# Changelog
+# Список изменений
 
-* 14 May 2022 - the standard is now used not only for NFT, but for all tokens in the TON. Added section "Jetton metadata attributes".
+- 14 May 2022 - the standard is now used not only for NFT, but for all tokens in the TON. Added section "Jetton metadata attributes".
 
-* 31 Aug 2022 - added note about data encoded in TL-B schema in "Data serialization" paragraph.
+- 31 Aug 2022 - added note about data encoded in TL-B schema in "Data serialization" paragraph.
 
-* 14 Oct 2022 - render_type and amount_style for Jetton metadata
+- 14 Oct 2022 - render_type and amount_style for Jetton metadata
 
-* 20 Dec 2023 - added clarification for semi-chain data: "In case of collisions (the field exists in both off-chain data and on-chain data), on-chain values are used."
+- 20 Dec 2023 - added clarification for semi-chain data: "In case of collisions (the field exists in both off-chain data and on-chain data), on-chain values are used."
