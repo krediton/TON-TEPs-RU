@@ -1,27 +1,26 @@
-# TON Enhancement Proposals (TEPs)
+# Предложения по улучшению TON (TEP)
 
-> :warning: **WARNING:** this proposal system is experimental now, the process is a subject to change.
+> :warning: **ВНИМАНИЕ:** эта система предложений в настоящее время является экспериментальной, процесс может быть изменен.
 
-The main goal of TON Enhancement Proposals is to provide a convenient and formal way to propose changes to TON Blockchain
-and standardize ways of interaction between different parts of ecosystem.
+Основная цель предложений по улучшению TON — предоставить удобный и формальный способ предложения изменений в блокчейне TON и стандартизировать способы взаимодействия между различными частями экосистемы.
 
-Proposal management is done using GitHub pull requests, the process is described formally in [TEP-1](./text/0001-tep-lifecycle.md).
+Управление предложением осуществляется с помощью Pull Request GitHub, этот процесс описывается в [TEP-1](./text/0001-tep-lifecycle.md).
 
-## Creating TEP
+## Создание TEP
 
-1. Discuss your proposal with community first, for example in TON Dev chat ([en](https://t.me/tondev_eng)/[ru](https://t.me/tondev)).
-2. Read [TEP-1](./text/0001-tep-lifecycle.md) to understand proposal management process.
-3. Fork this repo and copy `./0000-template.md` to `./text/0000-my-new-standard.md` where "my-new-standard" is a short title of your TEP.
-4. Fill all sections and answer questions stated in template. If you need to include images, upload them to `./assets/0000-my-new-standard/` folder.
-5. Submit a pull request.
+1. Сначала обсудите ваше предложение с сообществом, например в чате TON Dev ([en](https://t.me/tondev_eng)/[ru](https://t.me/tondev)).
+2. Прочитайте [TEP-1](./text/0001-tep-lifecycle.md) для понимания процесса управления предложением.
+3. Сделайте форк этого репозиторий и скопируйте `./0000-template.md` в `./text/0000-my-new-standard.md`, где "my-new-standard" - короткое название вашего TEP.
+4. Заполните все разделы и ответы на вопросы, указанные в шаблоне. Если вам нужно добавить изображения, загрузите их в папку `./assets/00-my-new-standard/`.
+5. Отправьте Pull request.
 
-## Merged TEPs
+## Объединенные TEP
 
-## Active
+## Активные
 
-| TEP                                          | Title                                                 | Type               | Created                                    |
+| TEP                                          | Название                                              | Тип                | Создан                                     |
 | -------------------------------------------- | ----------------------------------------------------- | ------------------ | ------------------------------------------ |
-| [1](./text/0001-tep-lifecycle.md)            | TEP Lifecycle                                         | Meta               | 11.06.2022 |
+| [1](./text/0001-tep-lifecycle.md)            | Жизненный цикл TEP                                    | Мета               | 11.06.2022 |
 | [2](./text/0002-address.md)                  | TON Addresses                                         | Core               | 07.09.2019 |
 | [62](./text/0062-nft-standard.md)            | NFT Standard                                          | Contract Interface | 01.02.2022 |
 | [64](./text/0064-token-data-standard.md)     | Token Data Standard                                   | Contract Interface | 03.02.2022 |
