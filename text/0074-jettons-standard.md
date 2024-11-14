@@ -1,50 +1,54 @@
 - **TEP**: [74](https://github.com/ton-blockchain/TEPs/pull/4)
-- **title**: Fungible tokens (Jettons) standard
-- **status**: Active
-- **type**: Contract Interface
-- **authors**: [EmelyanenkoK](https://github.com/EmelyanenkoK), [Tolya](https://github.com/tolya-yanot)
-- **created**: 12.03.2022
-- **replaces**: -
-- **replaced by**: -
+- **title**: Стандарт Fungible tokens (Jettons)
+- **статус**: Активна
+- **Тип**: Контрактный Интерфейс
+- **авторы**: [EmelyanenkoK](https://github.com/EmelyanenkoK), [Tolya](https://github.com/tolya-yanot)
+- **создан**: 12.03.2022
+- **Заменяет**: -
+- \*\*заменено \*\*: -
 
 # Summary
 
-A standard interface for Jettons (TON fungible tokens).
+Стандартный интерфейс для джеттонов (TON fungible tokens).
 
-# Motivation
+# Мотивация
 
-A standard interface will greatly simplify interaction and display of different tokenized assets.
+Стандартный интерфейс значительно упростит взаимодействие и отображение различных токенизированных активов.
 
-Jetton standard describes:
+Jetton стандартное описание:
 
-* The way of jetton transfers.
-* The way of retrieving common information (name, circulating supply, etc) about given Jetton asset.
+- The way of jetton transfers.
+- Способ получения общей информации (название, распространение и т.д. ) о данном Jetton asset.
 
-# Guide
+# Инструкция
 
-## Useful links
-1. [Reference jetton implementation](https://github.com/ton-blockchain/token-contract/)
-2. [Jetton deployer](https://jetton.live/)
-3. FunC Jetton lesson ([en](https://github.com/romanovichim/TonFunClessons_Eng/blob/main/lessons/smartcontract/9lesson/ninthlesson.md)/[ru](https://github.com/romanovichim/TonFunClessons_ru/blob/main/lessons/smartcontract/9lesson/ninthlesson.md))
+## Полезные ссылки
 
-# Specification
+1. [Ссылка на реализацию jetton](https://github.com/ton-blockchain/token-contract/)
+2. [Разработчик Джеттона](https://jetton.live/)
+3. Урок FunC Jetton ([en](https://github.com/romanovichim/TonFunClessons_Eng/blob/main/lessons/smartcontract/9lesson/ninthlesson.md)/[ru](https://github.com/romanovichim/TonFunFunClessons_ru/blob/main/lessons/smartcontract/9lesson/ninthlesson.md))
 
-Here and following we use "Jetton" with capital `J` as designation for entirety of tokens of the same type, while "jetton" with `j` as designation of amount of tokens of some type.
+# Спецификация
 
-Jettons are organized as follows: each Jetton has master smart-contract which is used to mint new jettons, account for circulating supply and provide common information.
+Здесь и далее мы используем "Jetton" с капиталом "J" как назначение целиком токенов того же типа, в то время как "jetton" с "j" как обозначение количества токенов какого-то типа.
 
-At the same time information about amount of jettons owned by each user is stores in decentralized manner in individual (for each owner) smart-contracts called "jetton-wallets".
+Джеттоны организованы следующим образом: каждый Джеттон имеет мастер-контракт, который используется для мяты новых джеттонов, учета циркуляции поставок и предоставления общей информации.
 
-Example: if you release a Jetton with circulating supply of 200 jetton which are owned by 3 people, then you will deploy 4 contracts: 1 Jetton-master and 3 jetton-wallets.
+В то же время информация о количестве джеттонов, принадлежащих каждому пользователю, хранится в индивидуальном (для каждого владельца) смарт-контрактах под названием "Jetton-кошельки".
 
-## Jetton wallet smart contract
-Must implement:
+Пример: если вы освободите Jetton с оборотными поставками 200 реактивных самолетов, которые принадлежат 3 человека, затем вы развернете 4 контракта: 1 Jetton-master и 3 Jetton-кошелька.
 
-### Internal message handlers
+## Jetton кошелек смарт-контракт
+
+Требуется реализация:
+
+### Внутренние обработчики сообщений
+
 #### 1. `transfer`
-**Request**
 
-TL-B schema of inbound message:
+**Запрос**
+
+TL-B схема входящего сообщения:
 
 ```
 transfer#0f8a7ea5 query_id:uint64 amount:(VarUInteger 16) destination:MsgAddress
@@ -53,73 +57,74 @@ transfer#0f8a7ea5 query_id:uint64 amount:(VarUInteger 16) destination:MsgAddress
                  = InternalMsgBody;
 ```
 
-`query_id` - arbitrary request number.
+`query_id` - произвольный номер запроса.
 
-`amount` - amount of transferred jettons in elementary units.
+`amount` - количество переданных джеттонов в элементарных единицах.
 
-`destination` - address of the new owner of the jettons.
+`destination` - адрес нового владельца самолетов.
 
-`response_destination` - address where to send a response with confirmation of a successful transfer and the rest of the incoming message Toncoins.
+`response_destination` - адрес, где отправить ответ с подтверждением успешного перевода и остальной части входящего сообщения Toncoins.
 
-`custom_payload` - optional custom data (which is used by either sender or receiver jetton wallet for inner logic).
+`custom_payload` - пользовательские данные (которые используются либо отправителем, либо ресивером jetton для внутренней логики).
 
-`forward_ton_amount` - the amount of nanotons to be sent to the destination address.
+`forward_ton_amount` - количество нанотонов, отправляемых на адрес назначения.
 
-`forward_payload` - optional custom data that should be sent to the destination address.
+`forward_payload` - необязательные пользовательские данные, которые должны быть отправлены на адрес назначения.
 
-**Should be rejected if:**
+**Должно быть отклонено, если:**
 
-1. message is not from the owner.
-2. there is no enough jettons on the sender wallet
-3. there is no enough TON (with respect to jetton own storage fee guidelines and operation costs) to process operation, deploy receiver's jetton-wallet and send `forward_ton_amount`.
-4. After processing the request, the receiver's jetton-wallet **must** send at least `in_msg_value - forward_ton_amount - 2 * max_tx_gas_price - 2 * fwd_fee` to the `response_destination` address.
-   If the sender jetton-wallet cannot guarantee this, it must immediately stop executing the request and throw error.
-   `max_tx_gas_price` is the price in Toncoins of maximum transaction gas limit of FT habitat workchain. For the basechain it can be obtained from [`ConfigParam 21`](https://github.com/ton-blockchain/ton/blob/78e72d3ef8f31706f30debaf97b0d9a2dfa35475/crypto/block/block.tlb#L660) from `gas_limit` field.  `fwd_fee` is forward fee for transfer request, it can be obtained from parsing transfer request message.
+1. сообщение не от владельца.
+2. на кошельке отправителя недостаточно джеттонов
+3. нет достаточного TON (по отношению к собственным рекомендациям по сборам за хранение данных и стоимости операции) для обработки операции, установки Jetton-кошелька получателя и отправки `forward_ton_amount`.
+4. После обработки запроса **должны** отправить хотя бы `in_msg_value - forward_ton_amount - 2 * max_tx_gas_price - 2 * fwd_fee` по адресу `response_destination`.
+   Если Jetton-кошелек отправителя не может гарантировать это, он должен немедленно прекратить выполнение запроса и вызвать ошибку.
+   Цена `max_tx_gas_price` - это цена в Toncoins максимального лимита газа в цепочке сред обитания FT. За базовый код можно получить в разделе [`ConfigParam 21`](https://github.com/ton-blockchain/ton/blob/78e72d3ef8f31706f30debaf97b0d9a2dfa35475/crypto/block/block.tlb#L660) из поля `gas_limit`.  For the basechain it can be obtained from [`ConfigParam 21`](https://github.com/ton-blockchain/ton/blob/78e72d3ef8f31706f30debaf97b0d9a2dfa35475/crypto/block/block.tlb#L660) from `gas_limit` field.
 
-**Otherwise should do:**
+**В противном случае следует делать:**
 
-1. decrease jetton amount on sender wallet by `amount` and send message which increase jetton amount on receiver wallet (and optionally deploy it).
-2. if `forward_amount > 0` ensure that receiver's jetton-wallet send message to `destination` address with `forward_amount` nanotons attached and with the following layout:
-   TL-B schema:
+1. уменьшить сумму jetton на кошельке отправителя на `amount` и отправить сообщение, что увеличит сумму jetton на кошельке получателя (и при необходимости разверните его).
+2. если `forward_amount > 0` убедитесь, что jetton-кошелек получателя отправляет сообщение на адрес `destination` с именем `forward_amount` nanotons присоединены и с макетом:
+   TL-B схема:
 
 ```
 transfer_notification#7362d09c query_id:uint64 amount:(VarUInteger 16)
-                              sender:MsgAddress forward_payload:(Either Cell ^Cell)
+                              sender:MsgAddress forward_payload:(ither Cell ^Cell)
                               = InternalMsgBody;
 ```
 
-`query_id` should be equal with request's `query_id`.
+`query_id` должен быть равен `query_id`.
 
 `amount` amount of transferred jettons.
 
-`sender` is address of the previous owner of transferred jettons.
+`sender` - адрес предыдущего владельца переданных реактивных самолетов.
 
-`forward_payload` should be equal with request's `forward_payload`.
+`forward_payload` должен быть равен `forward_payload`.
 
-If `forward_amount` is equal to zero, notification message should not be sent.
+Если `forward_amount` равен нулю, сообщение не должно быть отправлено.
 
-3. Receiver's wallet should send all excesses of incoming message coins to `response_destination` with the following layout:
-   TL-B schema: `excesses#d53276db query_id:uint64 = InternalMsgBody;`
-   `query_id` should be equal with request's `query_id`.
+3. Кошелек получателя должен отправить все лишние сообщения в `response_destination` со следующим макетом: схема
+   TL-B: `excesses#d53276db query_id:uint64 = InternalMsgBody;
+   `query_id`должен быть равен`query_id\`.
 
-#### `forward_payload` format
+#### Формат `forward_payload`
 
-If you want to send a simple comment in the `forward_payload` then the `forward_payload` must starts with `0x00000000` (32-bits unsigned integer equals to zero) and the comment is contained in the remainder of the `forward_payload`.
+Если вы хотите отправить простой комментарий в `forward_payload`, то `forward_payload` должен начинаться с `0x0000000000` (32-бит unsigned integer равным нулю) и комментарий находится в оставшейся части `forward_payload`.
 
-If comment does not begin with the byte `0xff`, the comment is a text one; it can be displayed "as is" to the end user of a wallet (after filtering invalid and control characters and checking that it is a valid UTF-8 string). 
-For instance, users may indicate the purpose ("for coffee") of a simple transfer from their wallet to the wallet of another user in this text field. 
+Если комментарий не начинается с байта `0xff`, комментарий является текстовым сообщением; можно отобразить "как есть" конечному пользователю кошелька (после фильтрации недопустимых и контрольных символов и проверки правильности UTF-8 строки).
+Например, пользователи могут указать на цель ("кофе") простой передачи из своего кошелька на кошелек другого пользователя в этом текстовом поле.
 
-On the other hand, if the comment begins with the byte `0xff`, the remainder is a "binary comment", which should not be displayed to the end user as text (only as hex dump if necessary). 
-The intended use of "binary comments" is, e.g., to contain a purchase identifier for payments in a store, to be automatically generated and processed by the store's software.
+С другой стороны, если комментарий начинается с байта `0xff`, оставшаяся часть - это "бинарный комментарий", , который не должен отображаться конечному пользователю как текст (только в качестве шестнадцатеричного дампа при необходимости).
+Предназначен для использования "бинарных комментариев" напр. содержит идентификатор покупки для платежей в магазине, который будет автоматически сгенерирован и обработан магазином.
 
-If the `forward_payload` contains a binary message for interacting with the destination smart contract (for example, with DEX), then there are no prefixes.
+Если `forward_payload` содержит бинарное сообщение для взаимодействия с смарт-контрактом назначения (например, с DEX), то префиксов нет.
 
-These rules are the same with the payload format when simply sending Toncoins from a regular wallet ([Smart Contract Guidelines: Internal Messages, 3](https://ton.org/docs/#/howto/smart-contract-guidelines?id=internal-messages)).
+Эти правила совпадают с форматом полезной нагрузки, когда просто отправляются Toncoins с обычного кошелька ([Руководство по Smart Contract Guidelines: Internal Messages, 3](https://ton.org/docs/#/howto/smart-contract-guidelines?id=internal-messages)).
 
 #### 2. `burn`
-**Request**
 
-TL-B schema of inbound message:
+**Запрос**
+
+TL-B схема входящего сообщения:
 
 ```
 burn#595f07bc query_id:uint64 amount:(VarUInteger 16)
@@ -127,62 +132,66 @@ burn#595f07bc query_id:uint64 amount:(VarUInteger 16)
               = InternalMsgBody;
 ```
 
-`query_id` - arbitrary request number.
+`query_id` - произвольный номер запроса.
 
-`amount` - amount of burned jettons
+`amount` - количество сожженных джеттонов
 
-`response_destination` - address where to send a response with confirmation of a successful burn and the rest of the incoming message coins.
+`response_destination` - адрес, где отправить ответ с подтверждением успешной записи и остальными монетами входящего сообщения.
 
-`custom_payload` - optional custom data.
+`custom_payload` - необязательные пользовательские данные.
 
-**Should be rejected if:**
+**Должно быть отклонено, если:**
 
-1. message is not from the owner.
-2. there is no enough jettons on the sender wallet
-3. There is no enough TONs to send after processing the request at least `in_msg_value -  max_tx_gas_price` to the `response_destination` address.
-   If the sender jetton-wallet cannot guarantee this, it must immediately stop executing the request and throw error.
+1. сообщение не от владельца.
+2. на кошельке отправителя недостаточно джеттонов
+3. Не хватает TON, чтобы отправить запрос после обработки запроса, по крайней мере `in_msg_value - max_tx_gas_price` по адресу `response_destination`.
+   Если Jetton-кошелек отправителя не может гарантировать это, он должен немедленно прекратить выполнение запроса и вызвать ошибку.
 
-**Otherwise should do:**
+**В противном случае следует делать:**
 
-1. decrease jetton amount on burner wallet by `amount` and send notification to jetton master with information about burn.
-2. Jetton master should send all excesses of incoming message coins to `response_destination` with the following layout:
-   TL-B schema: `excesses#d53276db query_id:uint64 = InternalMsgBody;`
-   `query_id` should be equal with request's `query_id`.
+1. уменьшите сумму jetton на кошельке записи на `amount` и отправьте уведомление мастеру jetton с информацией о записи.
+2. Jetton master должен послать все лишние сообщения в `response_destination` со следующим расположением:
+   TL-B схема `excesses#d53276db query_id:uint64 = InternalMsgBody;
+   `query_id`должен быть равен`query_id\`.
 
-### Get-methods
-1. `get_wallet_data()` returns `(int balance, slice owner, slice jetton, cell jetton_wallet_code)`
-   `balance` - (uint256) amount of jettons on wallet.
-   `owner` - (MsgAddress) address of wallet owner;
-   `jetton` - (MsgAddress) address of Jetton master-address;
-   `jetton_wallet_code` - (cell) with code of this wallet;
+### Получать методы
 
-## Jetton master contract
-### Get-methods
-1. `get_jetton_data()` returns `(int total_supply, int mintable, slice admin_address, cell jetton_content, cell jetton_wallet_code)`
-   `total_supply` - (integer) - the total number of issues jettons
-   `mintable` - (-1/0) - flag which indicates whether number of jettons can increase
-   `admin_address` - (MsgAddressInt) - address of smart-contrac which control Jetton
-   `jetton_content` - cell - data in accordance to [Token Data Standard #64](https://github.com/ton-blockchain/TEPs/blob/master/text/0064-token-data-standard.md)
-   `jetton_wallet_code` - cell - code of wallet for that jetton
-2. `get_wallet_address(slice owner_address)` return `slice jetton_wallet_address`
-   Returns jetton wallet address (MsgAddressInt) for this owner address (MsgAddressInt).
+1. `get_wallet_data()` возвращает `(int balance, slice owner, slice jetton, cell jetton_wallet_code)`
+   `balance` - (uint256) количество джеттонов в кошельке.
+   `владелец` - (MsgAddress) адрес владельца кошелька;
+   `jetton` - (MsgAddress) адрес мастер-адреса Jetton;
+   `jetton_wallet_code` - (cell) с кодом этого кошелька;
+
+## Джеттонский мастер контракт
+
+### Получать методы
+
+1. `get_jetton_data()` возвращает `(int total_supply, int mintable, slice admin_address, jetton_content, cell jetton_wallet_code)`
+   `total_supply` - (integer) - общее количество выпусков jetton
+   `mintable` - (-1/0) - флаг, указывающий может ли количество jetton'ов увеличить
+   `admin_address` - (MsgAddressInt) - адрес smart-contrac с управлением Jetton
+   `jetton_content` - ячейка - данные в соответствии с [Стандартом токенов данных #64](https://github. om/ton-blockchain/TEPs/blob/master/text/0064-token-data-standard.md)
+   `jetton_wallet_code` - ячейка - код кошелька для этого jetton
+2. `get_wallet_address(slice owner_address)` возвращает `slice jetton_wallet_address`
+   Возвращает адрес Jetton (MsgAddressInt) для этого адреса владельца (MsgAddressInt).
 
 # TL-B schema
+
 ```
-nothing$0 {X:Type} = Maybe X;
-just$1 {X:Type} value:X = Maybe X;
-left$0 {X:Type} {Y:Type} value:X = Either X Y;
-right$1 {X:Type} {Y:Type} value:Y = Either X Y;
-var_uint$_ {n:#} len:(#< n) value:(uint (len * 8))
+ничего$0 {X:Type} = Может быть X;
+just$1 {X:Type} значение:X = Может быть X;
+left$0 {X:Type} {Y:Type} значение:X = Either X Y;
+right$1 {X:Type} {Y:Type} значение:Y = Either X Y;
+var_uint$_ {n:#} len:(#< n) значение:(uint (len * 8))
          = VarUInteger n;
 
 addr_none$00 = MsgAddressExt;
 addr_extern$01 len:(## 9) external_address:(bits len)
              = MsgAddressExt;
-anycast_info$_ depth:(#<= 30) { depth >= 1 }
+anycast_info$_ глубина:(#<= 30) { depth >= 1 }
    rewrite_pfx:(bits depth) = Anycast;
 addr_std$10 anycast:(Maybe Anycast)
-   workchain_id:int8 address:bits256  = MsgAddressInt;
+   workchain_id:int8 address:bits256 = MsgAddressInt;
 addr_var$11 anycast:(Maybe Anycast) addr_len:(## 9)
    workchain_id:int32 address:(bits addr_len) = MsgAddressInt;
 _ _:MsgAddressInt = MsgAddress;
@@ -190,11 +199,11 @@ _ _:MsgAddressExt = MsgAddress;
 
 transfer query_id:uint64 amount:(VarUInteger 16) destination:MsgAddress
            response_destination:MsgAddress custom_payload:(Maybe ^Cell)
-           forward_ton_amount:(VarUInteger 16) forward_payload:(Either Cell ^Cell)
+           forward_ton_amount:(VarUInteger 16) forward_payload:(either Cell)
            = InternalMsgBody;
 
 transfer_notification query_id:uint64 amount:(VarUInteger 16)
-           sender:MsgAddress forward_payload:(Either Cell ^Cell)
+           ssgAddress forward_payload:(либо ячейка ^Cell)
            = InternalMsgBody;
 
 excesses query_id:uint64 = InternalMsgBody;
@@ -203,51 +212,51 @@ burn query_id:uint64 amount:(VarUInteger 16)
        response_destination:MsgAddress custom_payload:(Maybe ^Cell)
        = InternalMsgBody;
 
-// ----- Unspecified by standard, but suggested format of internal message
+// ----- Не указано стандартом, но предлагается формат внутреннего сообщения
 
-internal_transfer  query_id:uint64 amount:(VarUInteger 16) from:MsgAddress
+internal_transfer query_id:uint64 amount:(VarUInteger 16) от:MsgAddress
                      response_address:MsgAddress
                      forward_ton_amount:(VarUInteger 16)
                      forward_payload:(Either Cell ^Cell)
                      = InternalMsgBody;
 burn_notification query_id:uint64 amount:(VarUInteger 16)
-       sender:MsgAddress response_destination:MsgAddress
+       ssgAddress response_destination:MsgAddress
        = InternalMsgBody;
 ```
 
-`crc32('transfer query_id:uint64 amount:VarUInteger 16 destination:MsgAddress response_destination:MsgAddress custom_payload:Maybe ^Cell forward_ton_amount:VarUInteger 16 forward_payload:Either Cell ^Cell = InternalMsgBody') = 0x8f8a7ea5 & 0x7fffffff = 0xf8a7ea5`
+`crc32('transfer query_id:uint64 amount:VarUInteger 16 destination:MsgAddress response_destination:MsgAddress custom_payload:Maybe ^Cell forward_ton_amount:VarUInteger 16 forward_payload:Либо Cell ^Cell = InternalMsgBody') = 0x8f8a7ea5 & 0x7fffffffff = 0xf8a7ea5`
 
-`crc32('transfer_notification query_id:uint64 amount:VarUInteger 16 sender:MsgAddress forward_payload:Either Cell ^Cell = InternalMsgBody') = 0xf362d09c & 0x7fffffff = 0x7362d09c`
+`crc32('transfer_notification query_id:uint64 amount:VarUInteger 16 sender:MsgAddress forward_payload:either Cell ^Cell = InternalMsgBody') = 0xf362d09c & 0x7fffffff = 0x7362d09c`
 
 `crc32('excesses query_id:uint64 = InternalMsgBody') = 0x553276db | 0x80000000 = 0xd53276db`
 
-`crc32('burn query_id:uint64 amount:VarUInteger 16 response_destination:MsgAddress custom_payload:Maybe ^Cell = InternalMsgBody') = 0x595f07bc & 0x7fffffff = 0x595f07bc`
+`crc32('burn query_id:uint64 amount:VarUInteger 16 response_destination:MsgAddress custom_payload:Maybe ^Cell = InternalMsgBody') = 0x595f07bc & 0x7fffffffff = 0x595f07bc`
 
 `crc32('internal_transfer query_id:uint64 amount:VarUInteger 16 from:MsgAddress response_address:MsgAddress forward_ton_amount:VarUInteger 16 forward_payload:Either Cell ^Cell = InternalMsgBody') = 0x978d4519 & 0x7fffffff = 0x178d4519`
 
-`crc32('burn_notification query_id:uint64 amount:VarUInteger 16 sender:MsgAddress response_destination:MsgAddress = InternalMsgBody') = 0x7bdd97de & 0x7fffffff = 0x7bdd97de`
+`crc32('burn_notification query_id:uint64 amount:VarUInteger 16 sender:MsgAddress response_destination:MsgAddress = InternalMsgBody') = 0x7bdd97de & 0x7fffffffff = 0x7bdd97de`
 
-# Drawbacks
+# Ничья
 
-There is no way to get actual wallet balance onchain, because when the message with balance will arrive, wallet balance may be not actual.
+Нет способа получить фактический баланс кошелька, потому что при поступлении сообщения с балансом, баланс кошелька может не быть фактическим.
 
-# Rationale and alternatives
+# Обоснование и альтернативы
 
-Distributed architecture "One wallet - one contract" well described in the [NFT standard](https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md#rationale-and-alternatives) in paragraph "Rationale".
+Распределенная архитектура "Один кошелёк - один контракт" хорошо описана в [стандарте NFT](https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md#rationale-and-alternatives) в пункте "Rationale".
 
-# Prior art
+# Предыдущее искусство
 
-1. [EIP-20 Token Standard](https://eips.ethereum.org/EIPS/eip-20)
-2. [Sharded Smart Contracts for Smart Contract Developers](https://www.youtube.com/watch?v=svOadLWwYaM)
+1. [Стандарт токена EIP-20](https://eips.ethereum.org/EIPS/eip-20)
+2. [Заостренные умные контракты для разработчиков умных контрактов](https://www.youtube.com/watch?v=svOadLWwYaM)
 
-# Unresolved questions
+# Нерешенные вопросы
 
-1. There is no standard methods to perform "safe transfer", which will revert ownership transfer in case of contract execution failure.
+1. Не существует стандартных методов выполнения "безопасной передачи", которая вернет передачу собственности в случае неудачи исполнения контракта.
 
-# Future possibilities
+# Будущие возможности
 
-There was an idea to implement [external message tokens](https://t.me/ton_overview/35) (by [EmelyanenkoK](https://github.com/EmelyanenkoK)).
+Вышла идея реализовать [внешние токены сообщения](https://t.me/ton_overview/35) ( [EmelyanenkoK](https://github.com/EmelyanenkoK)).
 
-# Changelog
+# Список изменений
 
-31 Aug 2022 - Added `forward_payload` format. 
+31 Авг 2022 - Добавлен формат `forward_payload`.
