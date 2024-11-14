@@ -1,120 +1,120 @@
 - **TEP**: [115](https://github.com/ton-blockchain/TEPs/blob/master/text/0115-ton-connect.md)
 - **title**: TON Connect
-- **status**: Active
-- **type**: Core
+- **статус**: Активна
+- **type**: Ядро
 - **authors**: @oleganza, @siandreev, subden, brainpicture, @sorokin0andrey, abogoslavskiy, @MariaBit, Olga May, Aleksei Mazelyuk, tonrostislav, KuznetsovNikita.
-- **created**: 20.10.2022
-- **replaces**: -
-- **replaced by**: -
+- **создан**: 20.10.2022
+- **Заменяет**: -
+- \*\*заменено \*\*: -
 
 # Summary
 
-TON Connect is a unified protocol for communication between TON wallets and TON apps.
+TON Connect - это единый протокол для общения между кошельками TON и TON-приложениями.
 
-# Motivation
+# Мотивация
 
-The Open Network needs a **unified** protocol for communication between TON wallets and TON (d)apps to achieve following goals:
+Открытой сети нужен **унифицированный** протокол для общения между кошельками TON и приложениями TON (d)для достижения следующих целей:
 
-1. Any TON app (web / desktop / mobile / etc) can be operated by any wallet (mobile / desktop / web / browser extension / dapp browser / hardware / etc).
+1. Любое приложение TON (веб-/ рабочий стол/мобильный / др.) может работать с любым кошельком (мобильный / настольный / веб-браузер / расширение / dapp браузер / аппаратное / т.д. ).
 
-2. Users get a familiar and friendly experience across all TON apps.
+2. Пользователи получают знакомый и дружелюбный доступ ко всем приложениям TON.
 
-# Guide
+# Инструкция
 
-Apps provide the UI to an infinite range of functionality in TON based on smart contracts, but do not have immediate access to users’ funds. Therefore they are often called decentralized apps or “dapps”.
+Приложения предоставляют пользовательский интерфейс бесконечному набору функций в TON на основе смарт-контрактов, но не имеют непосредственного доступа к средствам пользователей. Поэтому они часто называются децентрализованными приложениями или картами.
 
-Wallets provide the UI to approving transactions and hold users’ cryptographic keys securely on their personal devices.
+Кошельки предоставляют пользовательский интерфейс для подтверждения транзакций и надежного хранения криптографических ключей пользователей на их персональных устройствах.
 
-This separation of concerns enables rapid innovation and high level of security for the users: wallets do not need to build walled-garden ecosystems themselves, while the apps do not need to take the risk holding end users’ accounts.
+Такое разделение проблем обеспечивает быстрое нововведение и высокий уровень безопасности для пользователей: кошелькам не нужно сами создавать огородные экосистемы, в то время как приложениям не нужно брать на себя риск, связанный с учетными записями конечных пользователей.
 
-TON Connect is a bridge that crosses this conceptual gap.
+TON Connect - это мост, который пересекает этот концептуальный разрыв.
 
-TON Connect, in addition to the transport layer of communication between the wallet and the app, provides methods of authorization, sending transactions to the network, interaction with smart contracts, etc.
+TON Connect, в дополнение к транспортному уровню связи между кошельком и приложением, предоставляет методы авторизации, отправки транзакций в сеть, взаимодействия с смарт-контрактами и т.д.
 
-# Specification
+# Спецификация
 
-Docs and specs are in [https://github.com/ton-blockchain/ton-connect](https://github.com/ton-blockchain/ton-connect) repo.
+Доки и спецификации находятся в [https://github.com/ton-blockchain/ton-connect](https://github.com/ton-blockchain/ton-connect) repo.
 
-At the time this PR was created (27 Feb, 2023) the revision was `acc5dd4d2106891cbfcade8d7faa58b9e16937fd`.
+На момент создания этого PR (27 февраля, 2023) ревизия была `acc5dd4d2106891cbfcade8d7faa58b9e16937fd`.
 
-# Rationale and alternatives
+# Обоснование и альтернативы
 
-## Unified way
+## Единый способ
 
-Since we strive to make blockchain as convenient and user-friendly as possible, communication between any app and any wallet (mobile wallet or browser extension or something else) must work in a unified way.
+Поскольку мы стремимся сделать блокчейн максимально удобным и удобным в использовании, общение между любым приложением и любым кошельком (мобильным приложением или дополнением для браузера) должно работать единым образом.
 
-This is convenient not only for users, but also for the developers of wallets and developers of dapps, which will need to support only one protocol.
+Это удобно не только для пользователей, но и для разработчиков кошельков и разработчиков dapps, , который должен поддерживать только один протокол.
 
-Examples of other blockchains (e.g., Ethereum) that have failed to achieve a single network-wide standard show that this confuses users and makes it difficult for developers: both must understand the different types of wallets and connections.
+Примеры других блокчейнов (напр. Ethereum), которые не смогли достичь единого сетевого стандарта показывает, что это путает пользователей и затрудняет для разработчиков: оба должны понимать различные типы кошельков и соединений.
 
-## Sessions for rich dapps
+## Сессии для богатых приложений
 
-The simplest "one-action" interaction between wallet and dapp can be done with a simple ton:// deeplink, in this variant in general it is not possible to get a response to the request or events in the runtime.
+Простейшее "однодействие" взаимодействие между кошельком и dapp можно выполнить простым тоном:// deeplink, в данном варианте вообще невозможно получить ответ на запрос или события в режиме работы.
 
-Since rich features are required for more sophisticated dapps, the TON Connect allows to establish permanent connections between the wallet and the application, get responses and events.
+Так как богатые возможности необходимы для более сложных карт, TON Connect позволяет устанавливать постоянные соединения между кошельком и приложением, получать ответы и события.
 
 ## SSE
 
-TON Connect uses SSE ([Server-Sent Events](https://html.spec.whatwg.org/multipage/server-sent-events.html#server-sent-events)) protocol instead of websockets, because with websockets in practice there are many connectivity problems that do not have a guaranteed solution.
+TON Connect использует SSE ([Server-Sent Events](https://html.spec.whatwg.org/multipage/server-sent-events. tml#server-sent-events)) протокол вместо websockets, потому что на практике существует множество проблем с подключением, которые не имеют гарантированного решения.
 
-## Backend side
+## Бэкэнд
 
-Interaction between wallet and dapp without a backend is possible only for dapp browser or browser extensions with a locally open dapp.
+Взаимодействие между кошельком и dapp без backend возможно только для браузера dapp или расширения браузера с локальным запуском dapp.
 
-If dapp and wallet are opened on different devices (for example the user opened app on desktop and wallet on mobile) an intermediary is needed for communication (relay or bridge).
+Если dapp и кошелек открываются на разных устройствах (например, приложение для открытия пользователя на рабочем столе и кошелек для мобильного) необходим посредник (ретранслятор или мост).
 
-Given the previous point about a unified protocol for all types of wallets in the general we need a backend intermediary in TON Connect.
+Учитывая предыдущую точку о едином протоколе для всех типов кошельков в целом, нам нужен бэкэнд посредник в TON Connect.
 
-TON Connect uses a simplest bridge for this.
+TON Connect использует простейший мост.
 
-All messages that pass through bridge are encrypted with end-to-end encryption, which preserves the privacy of users.
+Все сообщения, проходящие через мост, шифруются сквозным шифрованием, что сохраняет конфиденциальность пользователей.
 
-Dapp browsers and browser extensions can use the JS bridge without the need to run a backend server, while the protocol remains consistent for all types of wallets.
+Браузеры Dapp и расширения браузера могут использовать мост JS без необходимости запуска backend-сервера, в то время как протокол остается совместимым для всех типов кошельков.
 
-## Common public bridge
+## Обычный публичный мост
 
-TON Connect allows to run public bridge(s), which can use any wallets and dapps.
+TON Connect позволяет запускать общедоступный мост(ы), который может использовать любые кошельки и карты.
 
-This option is suitable for quick implementation of TON Connect, but has several drawbacks: the public bridge can potentially get the IP addresses of wallet users, some wallets may want extra functionality of the bridge.
+Этот вариант подходит для быстрой реализации TON Connect, но имеет несколько недостатков: публичный мост потенциально может получить IP адреса пользователей кошелька, некоторые кошельки могут захотеть получить дополнительную функциональность моста.
 
-## Wallets can run and host own bridge
+## Кошельки могут запускать и устанавливать собственный мост
 
-TON Connect allows wallets to run their own bridge if they don't want to use a public bridge.
+TON Connect позволяет кошелькам запускать свой собственный мост, если они не хотят использовать публичный мост.
 
-Each wallet can maintain their own bridge server and are free to choose how to communicate with it.
+Каждый кошелек может поддерживать свой собственный мост сервер и свободно выбирать, как с ним общаться.
 
-## Dapps don't need to run bridge
+## Приложениям не нужно запускать мост
 
-In Ton Connect apps do not need to maintain their own backend to receive data from the wallets.
+В Ton Connect приложениям не нужно поддерживать собственный бэкэнд для получения данных из кошельков.
 
-We believe that wallet developers have more possibilities for permanently hosting servers than dapp developers: many dapps are simple serverless web pages. Another argument is that there are many more dapps than wallets.
+Мы считаем, что разработчики кошельков имеют больше возможностей для постоянного хостинга серверов, чем разработчики dapp: многие dapps являются простыми безсерверными веб-страницами. Еще один аргумент заключается в том, что существует гораздо больше приложений, чем кошельков.
 
-## Open, Free, Decentralized
+## Открыть, свободно, децентрализованно
 
-The unified network-wide standard should be open-source and free.
+Единый сетевой стандарт должен быть открытым и бесплатным.
 
-It is important that it be decentralized, not to depend on a particular server, company or implementation.
+Важно, чтобы децентрализация не зависела от того или иного сервера, компании или ее реализации.
 
-As an example, any wallet or dapp should be able to work with this technology without someone else's centralized permission.
+Например, любой кошелек или dapp должны иметь возможность работать с этой технологией без чужого централизованного разрешения.
 
-TON Connect satisfies these considerations.
+TON Connect удовлетворяет этим соображениям.
 
-We can give an example of the opposite concept of WalletConnect, where all wallets and apps must communicate through a single relay belonging to a particular organization. The possibility of running your own relay (bridge) in WalletConnect is in the plans.
+Мы можем привести пример противоположной концепции WalletConnect, где все кошельки и приложения должны общаться через один ретранслятор, принадлежащий конкретной организации. Возможность запуска вашего ретранслятора (моста) в WalletConnect находится в планах.
 
-## Wallet list
+## Список кошельков
 
-For the convenience of developers it makes sense to create a single config with a list of all the wallets and their info (eg, the bridge address).
+Для удобства разработчиков имеет смысл создать одну конфигурацию со списком всех кошельков и их данных (например, адрес моста).
 
-Also, for the convenience of the user, UI can display wallets from this list, if the user does not yet have a wallet installed.
+Также, для удобства пользователя, пользовательский интерфейс может отображать кошельки из этого списка, если у пользователя еще не установлен кошелек.
 
-Such a list is located in the repository [https://github.com/ton-blockchain/wallets-list](https://github.com/ton-blockchain/wallets-list).
+Такой список находится в репозитории [https://github.com/ton-blockchain/wallets-list](https://github.com/ton-blockchain/wallets-list).
 
-The rules for getting on this list should be simple - the correct technical implementation of TON Connect.
+Правила для включения в этот список должны быть простыми - правильной технической реализации TON Connect.
 
-We note that the protocol itself does not depend on this list.
+Мы отмечаем, что сам протокол не зависит от этого списка.
 
-Despite some point of centralization and possible self-regulation issues, such a list would also contribute to the cross-linking and uniformity of the ecosystem.
+Несмотря на некоторые аспекты централизации и возможные вопросы саморегулирования, такой перечень также будет способствовать перекрестной связи и единообразию экосистем.
 
-# Future possibilities
+# Будущие возможности
 
-Further development of TON Connect is expected in the addition of new RPC methods covering various functionalities.
+Дальнейшая разработка TON Connect ожидается в добавлении новых методов RPC, охватывающих различные функции.
